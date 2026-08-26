@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../static/css/register.css" />
+  </head>
+  <body>
+    <div class="parent">
+      <div class="child">
+        <form action="/auth" method="post">
+          <h2>Вход</h2>
+
+          <div class="input-group">
+            <label for="name">Логин</label><br />
+            <input
+              type="text"
+              id="login"
+              name="login"
+              placeholder="Ваш логин"
+              required
+            /><br />
+          </div>
+
+          <div class="input-group">
+            <label for="age">Пароль</label><br />
+            <input
+              type="number"
+              id="Password"
+              name="password1"
+              placeholder="Пароль"
+              required
+            /><br />
+          </div>
+
+          
+
+          <button type="submit">Играть</button><br />
+
+          <div class="auth-link" style="margin-top: 15px; text-align: center">
+            <span>Нет аккаунта?</span>
+            <a href="/">Регистрация</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

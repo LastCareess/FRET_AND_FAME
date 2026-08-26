@@ -1,0 +1,59 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.parent {
+  background-image: url("../gif/cat.gif");
+  background-size: cover;
+  background-position: center;
+
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.child {
+  background-color: rgba(20, 8, 8, 0.678);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+h2 {
+  text-align: center;
+  margin-top: 0;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 4px;
+  border: none;
+  box-sizing: border-box;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #f80606;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #2ecc71;
+}

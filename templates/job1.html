@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Interface</title>
+    <link rel="stylesheet" href="../static/css/job_css/job1.css" />
+  </head>
+  <body>
+    <!-- 1. Скрытый чекбокс для карты (БЕЗ JS) -->
+    <input type="checkbox" id="map-toggle" style="display: none" />
+
+    <!-- 2. ОСНОВНОЙ ИНТЕРФЕЙС -->
+    <div class="parent">
+      <div class="NameAgeDiv">
+        <div class="NameDiv">{{player.name}}</div>
+        <div class="AgeDiv">{{player.age}}</div>
+      </div>
+
+      <div class="XP-NextLvl">
+        <div class="xp-bar">
+          <div id="xp-fill" class="AvailableEx"></div>
+          <div class="xp-text">
+            <span id="current-xp">{{player.xp}}</span> / <span id="max-xp">5000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="TimeDiv">
+        <span class="HourDiv">{{hours}}</span>:<span class="MinuteDiv">{{minutes}}</span>
+      </div>
+
+      <div class="TrailerDiv" id="click">
+        <div class="trailer-img">
+          <img src="../static/img/job-img/job1_img.png" alt="Trailer"/>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-row hp">
+          <div class="bar"><div id="hp-fill" class="fill"></div></div>
+          <span>{{player.hp}}HP/{{player.max_hp}}HP</span>
+        </div>
+        <div class="stat-row energy">
+          <div class="bar"><div id="energy-fill" class="fill"></div></div>
+          <span>{{player.energy}}/{{player.max_energy}} ENERGY</span>
+        </div>
+        <div class="stat-row hydration">
+          <div class="bar"><div id="water-fill" class="fill"></div></div>
+          <span>{{player.hydration}}/{{player.max_hydration}} WATER</span>
+        </div>
+        <div class="stat-row satiety">
+          <div class="bar"><div id="food-fill" class="fill"></div></div>
+          <span>{{player.satiety}}/{{player.max_satiety}} FOOD</span>
+        </div>
+      </div>
+
+      <div class="MoneyDiv">
+        <div class="wallet-img">💰 ${{player.money}}</div>
+      </div>
+
+      <!-- Кнопка телефона (на JS) -->
+      <div class="PhoneDiv">
+        <div class="phone-content">
+          <img src="../static/img/phone.png" alt="Phone" />
+        </div>
+      </div>
+
+      <!-- Кнопка карты (на CSS через label) -->
+      <label for="map-toggle" class="MapDiv">
+        <div class="Map-img">
+          <img src="../static/img/карта.png" alt="Map" />
+        </div>
+      </label>
+    </div>
+    <!-- КОНЕЦ .parent -->
+
+    <!-- 3. ОКНО КАРТЫ (Работает через CSS :checked) -->
+    <
+    <div class="map-modal-css">
+      <div class="modal-content">
+        <div class="modal-header">ВЫБОР ЛОКАЦИИ</div>
+        <div class="modal-grid">
+          <!-- Подземка: откроется на 1500 XP -->
+          <a href="/trailer" class="modal-item">
+          <span>🏠</span>
+          <p>Трейлер (Дом)</p>
+          </a>
+          <a
+            href="/tunnel"
+            id="loc-tunnel"
+            class="modal-item"
+            style="display: none"
+          >
+            <span>🚇</span>
+            <p>Подземный переход</p>
+          </a>
+
+          <!-- Парк: откроется на 3000 XP -->
+          <a
+            href="/park"
+            id="loc-park"
+            class="modal-item"
+            style="display: none"
+          >
+            <span>🌳</span>
+            <p>Парк</p>
+          </a>
+        </div>
+        <label for="map-toggle" class="close-button">ЗАКРЫТЬ</label>
+      </div>
+    </div>
+
+    <!-- 4. ОКНО ТЕЛЕФОНА (Работает на JS) -->
+    <div id="phone-modal" class="modal-overlay">
+      <div class="modal-content">
+        <!-- Главное меню -->
+        <div id="main-phone-menu">
+          <div class="modal-header">СЕТЬ ДОСТУПНА</div>
+          <div class="modal-grid">
+            <div class="modal-item" id="open-inventory">
+              <span>💼</span>
+              <p>ИНВЕНТАРЬ</p>
+            </div>
+            <!-- ДОБАВИЛИ id="open-job" ТУТ -->
+            <div class="modal-item" id="open-job">
+              <span>📋</span>
+              <p>ПОДРАБОТКА</p>
+            </div>
+            <div class="modal-item">
+              <span>🤝</span>
+              <p>ОТНОШЕНИЯ</p>
+            </div>
+            <div class="modal-item" id="open-shop">
+              <span>🛒</span>
+              <p>МАГАЗИН</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Инвентарь -->
+        <div id="inventory-menu" style="display: none">
+          <div class="modal-header">ВАШИ ВЕЩИ</div>
+          <div class="inventory-list" id="items-container"></div>
+          <button id="back-to-menu" class="btn-back">⬅ НАЗАД</button>
+        </div>
+
+        <!-- Окно подработок -->
+        <div id="job-menu" style="display: none">
+          <div class="modal-header">ДОСТУПНАЯ РАБОТА</div>
+          <div class="modal-grid">
+            <!-- Вернуться на главную -->
+            <a href="/trailer" class="modal-item">
+              <span>♻️🍾</span>
+              <p>Закончить подработку</p>
+            </a>
+
+            <!-- Ссылка на игру попсы -->
+            <a href="/play_popular" class="modal-item" id="job2" style="display: none;">
+              <span>🎸🎤</span>
+              <p>Играть попсу</p>
+            </a>
+
+            <!-- Ссылка на забегаловку -->
+            <a href="/small_concert" class="modal-item" id="job3" style="display: none;">
+              <span>🍔🎸</span>
+              <p>Играть в местной забегаловке</p>
+            </a>
+          </div>
+          <button id="back-from-job" class="btn-back">⬅ НАЗАД</button>
+        </div>
+
+        <!-- Окно магазина -->
+        <div id="shop-menu" style="display: none">
+      <div class="modal-header">КАТЕГОРИИ</div>
+      <div class="modal-grid" id="shop-categories-grid">
+        <div class="modal-item" onclick="loadShop('food')">
+          <span>🍔</span>
+          <p>ЕДА</p>
+        </div>
+        <div class="modal-item" onclick="loadShop('drink')">
+          <span>🥤</span>
+          <p>НАПИТКИ</p>
+        </div>
+        <div class="modal-item" onclick="loadShop('meds')">
+          <span>💊</span>
+          <p>АПТЕКА</p>
+        </div>
+        <div class="modal-item" onclick="loadShop('cloth')">
+          <span>👕</span>
+          <p>ОДЕЖДА</p>
+        </div>
+        <div class="modal-item" onclick="loadShop('guitar')">
+          <span>🎸</span>
+          <p>ГИТАРЫ</p>
+        </div>
+        <div class="modal-item" onclick="loadShop('eqp')">
+          <span>⚡</span>
+          <p>УСИЛИТЕЛИ</p>
+        </div>
+      </div>
+          <div id="shop-items-container"></div>
+      <button id="back-from-shop" class="btn-back">⬅ НАЗАД</button>
+    </div>
+    <button id="close-phone">ЗАКРЫТЬ</button>
+      </div>
+    </div>
+
+        <button id="close-phone">ЗАКРЫТЬ</button>
+      </div>
+    </div>
+
+    <script src="../static/js/script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,355 @@
+:root {
+  --bg-panel: rgba(0, 0, 0, 0.6);
+  --accent: #f1c40f;
+  --glass: blur(10px);
+  --green: #2ecc71;
+  --red: #e74c3c;
+  --blue: #3498db;
+  --cyan: #00d4ff;
+  --orange: #f39c12;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: url("../img/trailer_background.jpeg") no-repeat center center
+    fixed;
+  background-size: cover;
+  color: white;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* 1. Основная сетка интерфейса */
+.parent {
+  display: grid;
+  grid-template-columns: 300px 1fr 300px;
+  grid-template-rows: 100px 1fr 160px; /* Нижняя строка фиксирована, чтобы контент не падал */
+  gap: 20px;
+  height: 100vh;
+  padding: 25px;
+}
+
+/* Общий стиль всех панелей */
+.NameAgeDiv,
+.XP-NextLvl,
+.TimeDiv,
+.stats,
+.MoneyDiv {
+  background: var(--bg-panel);
+  backdrop-filter: var(--glass);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+/* 2. Верхние элементы */
+.NameAgeDiv .NameDiv {
+  font-weight: bold;
+  color: var(--accent);
+  font-size: 1.4rem;
+}
+.NameAgeDiv .AgeDiv {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.xp-bar {
+  background: rgba(255, 255, 255, 0.1);
+  height: 25px;
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+.AvailableEx {
+  background: var(--green);
+  width: 0%; /* Управляется через JS */
+  height: 100%;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px var(--green);
+}
+
+.xp-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px black;
+}
+
+.TimeDiv {
+  text-align: center;
+  font-size: 2rem;
+  letter-spacing: 2px;
+}
+
+/* 3. Статы (Слева) - ЦВЕТА ДОБАВЛЕНЫ */
+.stats {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 15px;
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+/* Контейнер полоски */
+.stat-row .bar {
+  height: 8px;
+  flex-grow: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden; /* Чтобы fill не вылезал за границы */
+}
+
+/* Внутренний блок заполнения (управляется через JS) */
+.stat-row .bar .fill {
+  height: 100%;
+  width: 100%; /* По умолчанию полная */
+  transition: width 0.4s ease-out; /* Плавная анимация изменения */
+  filter: brightness(1.2);
+}
+
+/* Цвета для конкретных ID заполнения */
+#hp-fill {
+  background: var(--red);
+  box-shadow: 0 0 10px var(--red);
+}
+#energy-fill {
+  background: var(--blue);
+  box-shadow: 0 0 10px var(--blue);
+}
+#water-fill {
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+}
+#food-fill {
+  background: var(--orange);
+  box-shadow: 0 0 10px var(--orange);
+}
+
+/* 4. Трейлер (Центр) */
+.TrailerDiv {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.trailer-img img {
+  width: 95%;
+  max-height: 80vh;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px black);
+  transition: 0.4s;
+  cursor: pointer;
+}
+.trailer-img img:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 25px var(--accent));
+}
+
+/* 5. Деньги и Карта (Низ) */
+.MoneyDiv {
+  grid-row: 3;
+  align-self: center;
+  font-size: 1.6rem;
+  color: var(--green);
+}
+
+.MapDiv {
+  grid-column: 3;
+  grid-row: 3;
+  height: 150px;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(241, 196, 15, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+  background: none;
+}
+.MapDiv:hover {
+  transform: scale(1.05);
+  border-color: var(--accent);
+  box-shadow:
+    0 0 20px rgba(241, 196, 15, 0.3),
+    inset 0 0 15px rgba(241, 196, 15, 0.1);
+}
+.Map-img img {
+  width: 100%;
+  filter: brightness(0.8);
+  transition: 0.3s;
+}
+.MapDiv:hover .Map-img img {
+  filter: brightness(1.1);
+}
+
+/* 6. Телефон */
+.PhoneDiv {
+  grid-column: 3;
+  grid-row: 2;
+  align-self: end;
+  justify-self: end;
+  margin-bottom: 10px;
+  z-index: 10;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.PhoneDiv:hover {
+  transform: scale(1.1) translateX(-5px);
+}
+.phone-content img {
+  width: 140px;
+  filter: drop-shadow(0 0 15px var(--accent));
+}
+
+/* 7. Модальные окна */
+.modal-overlay,
+.map-modal-css {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Логика чекбокса для карты */
+#map-toggle:checked ~ .map-modal-css {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--bg-panel);
+  border: 2px solid var(--accent);
+  padding: 30px;
+  border-radius: 20px;
+  width: 340px;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(241, 196, 15, 0.2);
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 15px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.modal-item {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px 10px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.modal-item:hover {
+  background: var(--accent);
+  color: black;
+  transform: translateY(-3px);
+}
+.modal-item span {
+  font-size: 1.8rem;
+}
+
+/* 8. Инвентарь */
+.inventory-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 15px 0;
+}
+.item-slot {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed var(--accent);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+/* 9. Кнопки управления */
+.btn-back,
+#close-phone,
+.close-button {
+  width: 100%;
+  background: none;
+  border: 1px solid white;
+  color: white;
+  padding: 12px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: 0.3s;
+  display: block;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.btn-back:hover,
+#close-phone:hover,
+.close-button:hover {
+  background: white;
+  color: black;
+}
+
+
+
+
+.inventory-list,
+#items-container,
+#shop-items-container {
+  overflow-y: auto;
+  max-height: 400px; /* Ограничиваем высоту списка, чтобы кнопка ЗАКРЫТЬ не уезжала вниз */
+  padding-right: 5px;
+  margin-top: 15px;
+}
+
+/* Делаем полосу прокрутки тонкой и аккуратной */
+.modal-grid::-webkit-scrollbar,
+.inventory-list::-webkit-scrollbar,
+#items-container::-webkit-scrollbar,
+#shop-items-container::-webkit-scrollbar {
+  width: 4px;
+}
+.modal-grid::-webkit-scrollbar-thumb,
+.inventory-list::-webkit-scrollbar-thumb,
+#items-container::-webkit-scrollbar-thumb,
+#shop-items-container::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 2px;
+}

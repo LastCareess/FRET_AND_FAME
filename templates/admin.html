@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Фига, ты в админку залез?</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <h1>Панель всевластия</h1>
+        <h2>Ваши данные: </h2>
+        
+        <span>ХП: {{player.hp}}</span>
+        <span>Энегрия: {{player.energy}}<span>
+        <span>Вода: {{player.hydration}}<span>
+        <span>Еда: {{player.satiety}}</span>
+        <span>Деньги: {{player.money}}$</span>
+        <span>Опыт: {{player.xp}}</span>
+        
+
+        <form action="/admin/cheats" method="get">
+        
+            <div>
+                <input name="money" placeholder="Введи сколько денег нужно в $">
+                <button type="submit" name="action" value="add_money">Добавить к счету</button>
+            </div>
+        
+            <div>
+                <button type="submit" name="action" value="reset_cooldowns">Сбросить кулдауны</button>
+            </div>
+        
+            <div>
+                <button type="submit" name="action" value="full_stats">Восстановить статы</button>
+            </div>
+        
+            <div>
+                <input name="xp" placeholder="Введи сколько xp нужно">
+                <button type="submit" name="action" value="add_xp">Добавить xp</button>
+            </div>
+        </form>
+        
+        <a href="/trailer">Выйти из режима бога</a>
+        
+    </body>
+</html>

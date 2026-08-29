@@ -5,6 +5,36 @@ from flask import jsonify
 db_path = 'database.db'
 db = SqliteDatabase(db_path)
 
+"""
+TODO: КРИТИЧЕСКИЕ АРХИТЕКТУРНЫЕ ПРАВКИ БАЗЫ ДАННЫХ (ВЕРНУТЬСЯ ПОЗЖЕ)
+
+1. ГЛОБАЛЬНЫЙ ДОСТУП (Jobs.access и Locations.access):
+   Поля 'access' общие для всех. Если один игрок открывает работу/локацию, 
+   она открывается для всего сервера. Проверять доступ нужно динамически в коде по статам.
+
+2. МУСОР ПРИ СМЕРТИ (Нет каскадного удаления):
+   on_delete="CASCADE" есть только в Inventory. При смерти Player.delete() 
+   его кулдауны, группа и отношения с NPC остаются "сиротами" и забивают базу мусором.
+
+3. ДУБЛИРОВАНИЕ СТРОК (Нет уникальных индексов):
+   В Cooldowns и Relations база позволяет создавать по 10 одинаковых строк 
+   на одного игрока. Нужно добавить составные индексы в class Meta: indexes = ...
+
+4. ПУТАНИЦА С ИМЕНАМИ (Суффиксы _id):
+   Поля названы item_id, player_id. Из-за этого Peewee путает типы, и в коде 
+   приходится писать уродливое item.item_id.item_type. Переименовать просто в 'item', 'player'.
+
+5. ХАРДКОД КВЕСТОВ (Ограничение на 3 выбора):
+   Поля choice_name1, 2, 3 зашиты в Random_situation. Это ограничивает квесты строго 
+   тремя кнопками. Правильнее привязывать варианты ответов к Situation_results.
+
+6. СЛОТЫ ОДЕЖДЫ ( jacket и t-shirt):
+   Сейчас проверка идет по точному совпадению item_type. Игрок может надеть куртку 
+   и футболку одновременно. Нужно ввести общее поле 'category' = 'cloth'.
+"""
+
+
+
 class BaseModel(Model):
     class Meta:
         database = db
@@ -17,6 +47,7 @@ class Locations(BaseModel):
     needcharisma = IntegerField()
     open_from = IntegerField()
     open_to = IntegerField()
+    base_xp = IntegerField()
 
 class Jobs(BaseModel):
     name = CharField()

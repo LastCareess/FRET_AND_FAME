@@ -102,9 +102,9 @@ def fill_db():
     #===================ЛОКАЦИИ=======================
 
     locations_data = [
-        {"name":"Трейлер","access":True,"needxp":0,"needcharisma":0,"open_from":0,"open_to":1440},
-        {"name":"Переход","access":False,"needxp":1500,"needcharisma":20,"open_from":0,"open_to":1440},
-        {"name":"Парк","access":False,"needxp":3000,"needcharisma":40,"open_from":600,"open_to":1320}
+        {"name":"Трейлер","access":True,"needxp":0,"needcharisma":0,"open_from":0,"open_to":1440, "base_xp":10},
+        {"name":"Переход","access":False,"needxp":1500,"needcharisma":20,"open_from":0,"open_to":1440, "base_xp":15},
+        {"name":"Парк","access":False,"needxp":3000,"needcharisma":40,"open_from":600,"open_to":1320, "base_xp":20}
     ]
     for data in locations_data:
         Locations.get_or_create(name=data['name'], defaults=data)
@@ -205,7 +205,7 @@ def fill_db():
     #===========================БЛОК ПЕРВОЙ ЛОКАЦИИ============================================
         {"name":"Приходит ваша бывшая, которая требует с вас алименты на ребенка!",
          "description":"Пришла ваша бывшая девушка, с которой у вас был ребенок. Она требует чтобы ты уже наконец заплатил ей 100$!!!",
-         "chance":20,
+         "chance":10,
          "location_id":1,
          "choice_name1":"Ударить",
          "choice_name2":"Заплатить",
@@ -214,7 +214,7 @@ def fill_db():
 
         {"name":"Приходит ваш друг и предлагает вам выпить пива как обычно",
          "description":"Хэй чувак! Я холодненького принес как обычно)",
-         "chance":20,
+         "chance":10,
          "location_id":1,
          "choice_name1":"Отказать",
          "choice_name2":"Согласиться",
@@ -223,7 +223,7 @@ def fill_db():
         
         {"name":"Ваша крыша протекает",
          "description":"Крыша вашего трейлера протекает! Нужно срочно решать что делать!",
-         "chance": 5,
+         "chance": 2,
          "location_id":1,
          "choice_name1":"Игнорировать",
          "choice_name2":"Починить самому",
@@ -232,7 +232,7 @@ def fill_db():
 
         {"name":"Вам пришло письмо из профсоюза!",
          "description":"Это пособие по безработице!!! Скорее откройте его",
-         "chance": 7,
+         "chance": 4,
          "location_id":1,
          "choice_name1":"Скорее принять!!!",
          "is_available":True},

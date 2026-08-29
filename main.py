@@ -1,24 +1,124 @@
 import random
 from models import *
 from flask import Flask,render_template,redirect,request,session,jsonify
+from peewee import fn
 
 app = Flask("myapp")
 app.secret_key = 'Poawlh9aw1982;lawfi'
+"""
+Идеи для улучшения кода:
+1.Вынос в отдельную функцию кода для возврата json-а
+2.Разделение обязанностей в функции использования предметов
+3.Вынос функции обновления стат игрока на бэкенде в модель таблицы
+
+
+TODO: КРИТИЧЕСКИЕ БАГИ В ЛОГИКЕ КОДА (НАЙТИ И ИСПРАВИТЬ САМОМУ)
+
+1. КРИТИЧЕСКИЙ БАГ С ID ЛОКАЦИЙ И ПОДРАБОТОК:
+   В роутах вроде /trailer, /tunnel, /bottles написано:
+   player.location = 2 или player.job = 1.
+   Так делать нельзя! Поля ForeignKeyField в Peewee ждут целый ОБЪЕКТ, 
+   а не просто цифру. Из-за этого база данных работает непредсказуемо.
+   Как исправить: Либо передавать объект целиком, либо вспомнить про 
+   скрытое поле с суффиксом '_id', которое принимает чистые цифры.
+
+2. СЛОМАННЫЙ ЦИКЛ КВЕСТОВ И КУЛДАУНОВ (ВНУТРИ /click):
+   Посмотрите на блок 'elif not cooldown:'. Вы создаете кулдаун через 
+   Cooldowns.create(), но в блоке выше ('if cooldown...') вы используете 
+   метод Cooldowns.update(), но забыли приписать в самый конец цепочки 
+   метод, который физически пинает базу данных и выполняет запрос. 
+   Из-за этого кулдаун не перезаписывается, и квест вылетает БЕСКОНЕЧНО.
+   Как исправить: Найти, какой метод забыт в конце Cooldowns.update(...).
+
+3. ОГРОМНЫЙ ОШИБОЧНЫЙ IF ВЛОЖЕННОСТИ (ВНУТРИ /click):
+   У вас идет проверка смерти 'if player.hp <= 0:'. А сразу после нее 
+   написано 'if player.hp > 0:', внутрь которого вложена ВСЯ остальная 
+   логика игры. Это создает гигантскую 'лестницу отступов' вправо.
+   Более того, если игрок умрет, код сохранения дней 'if player.time >= 1440' 
+   в самом конце просто проигнорируется.
+   Как исправить: Применить технику 'Раннего возврата' (Early Return). 
+   Если игрок мертв, функция должна сразу прерываться через return, 
+   а весь остальной код живого игрока пойдет ниже БЕЗ всяких 'if player.hp > 0:'.
+
+
+Обновлено:
+1.В локации добавлено Base_xp
+2.Все функции переработаны, макаронного кода почти нет
+3.Пофикшены кулдауны
+"""
 #==============================================================================
-#МАРШРУТЫ
+"""ФУНЦКИИ-ХЕЛПЕРЫ"""
+"""Общие хелперы"""
+# 1.Возвращение данных игрока
+def send_player_data(player, status, extra_data=None):
+    data = {
+        "status":status,
+        "hp":player.hp,
+        "energy":player.energy,
+        "food":player.satiety,
+        "water":player.hydration,
+        "money":player.money,
+        "xp":player.xp, 
+        "time":player.time
+    }
+    if extra_data:
+        data.update(extra_data)
+
+    return jsonify(data)
+# 2.
+
+"""Хелперы для обработки клика"""
+# Обработка квеста
+def random_event(player):
+    location = player.location_id
+    # Достаем одну единственную ситуацию из всех перемешанных ситуаций
+    active_cooldowns = (Cooldowns.select(Cooldowns.situation_id)
+                        .where((Cooldowns.player_id == player.id) & (Cooldowns.available_at > 0)))
+
+    situation = (Random_situation
+                 .select()
+                 .where(
+                    (Random_situation.location_id == player.location_id) &
+                    (Random_situation.id << active_cooldowns == False))
+                 .order_by(fn.Random())
+                 .first())
+    if not situation or random.randint(0,100) >= situation.chance:
+        return None
+    
+    cooldown = Cooldowns.get_or_none(player_id = player.id, situation_id = situation.id)
+    if cooldown and cooldown.available_at > 0:
+        return None
+
+    new_cooldown = random.randrange(1440, 2881, 10)
+    if cooldown:
+        cooldown.available_at = new_cooldown
+        cooldown.save()
+    else:
+        Cooldowns.create(available_at = new_cooldown, player_id = player.id, situation_id = situation.id)
+
+    return send_player_data(player, "active", extra_data={
+        "situation_id": situation.id,
+        "name": situation.name,
+        "description": situation.description,
+        "choice": [situation.choice_name1, situation.choice_name2, situation.choice_name3]
+    })  
+    return None  
+
+"""API"""
+
+# Покупка предмета
 @app.route("/buy_item", methods=["POST"])
 def buy_item():
     try_to_buy_item = request.get_json()
     item = Items.get_or_none(id=try_to_buy_item.get("item_id"))
     player = Player.get_or_none(login=session.get("login"))
-
+    # Проверка на существование игрока и предмета
     if item and player:
-        
+        # Проверка на наличие денег у игрока
         if player.money >= item.price:
             player.money -= item.price
             player.save()
-
-
+            # Создание слота или увеличение количества предметов в инвентаре
             slot, created = Inventory.get_or_create(
                 player_id=player.id,
                 item_id=item.id,
@@ -35,12 +135,13 @@ def buy_item():
 
 
     
-
+# Отрисовка магазина
 @app.route("/shop", methods=["POST"])
 def shop():
     data = request.get_json()   
     
-
+    # Немного костыльное решение, в SQL одежда хранится в 4 разных типах, а js присылает один тип cloth, приходится делить тут на четыре подтипа
+    # P.S Отрисовка происходит по категориям, так что пользователь открывает категорию одежды в магазине и из за этого четыре типа превращаются в один
     if data.get("category_type") == "cloth":
         # Выбираем предметы, у которых item_type равен любому слову из списка одежды
         items = Items.select().where(
@@ -53,60 +154,61 @@ def shop():
             (Items.price >= 0) & 
             (Items.item_type == data.get("category_type"))
         )
+    # Список с предметами из базы
     sorted_items = []
+    # Перебор и запихивание в sorted_items предметов пришедших из SQL в items
     for item in items:
         sorted_items.append({"id":item.id,"name":item.name,"price":item.price,"description":item.description,"item_type":item.item_type})
     return jsonify(sorted_items)
 
+# Использование предмета (кажется логика слишком огромной)
 @app.route("/use_item", methods=["POST"])
 def use_item():
+    # Получение данных из базы и из json
     player = Player.get_or_none(login=session.get("login"))
     data = request.get_json()
     item = Inventory.get_or_none(id=data.get("inv_id"), player_id=player.id)
 
+    # Отлов ошибки если пользователь попытается применить предмет которого у него нет
     if not item or item.quantity <= 0:
         return jsonify({"status": "error", "message": "Предмет не найден"})
-    
-
     else:
+        # Можно запутаться, item_stats это обращение к таблице базовых предметов с айди используемого предмета из инвентаря игрока
         item_stats = item.item_id
 
-        # Логика по типам
+        # Логика по типам, если это используемый предмет то уменьшается количество и восстанавливаются статы
         if item_stats.item_type in ["food", "drink", "meds"]:
-            # Удаление/уменьшение количества
+            # Удаление/уменьшение количества (Важно что >1, если будет >0 то останется пустая карточка и запись о предмете с количеством 0)
             if item.quantity > 1:
                 item.quantity -= 1
                 item.save()
             else:
                 item.delete_instance()
-
+            # Лог в консоль
             print(f"Используем предмет: {item_stats.name}, Тип: {item_stats.item_type}, Восстанавливает жажды: {item_stats.restore_hydration}")
+            # Применение стат предмета к статам игрока
+            # (Min и Max используются для предотвращения переполнения шкалы и засчитывания статы больше максимального значения стат игрока)
             player.satiety = min(player.max_satiety, player.satiety + item_stats.restore_satiety)
             player.hydration = min(player.max_hydration, player.hydration + item_stats.restore_hydration)
             player.hp = min(player.max_hp, player.hp + item_stats.influence_on_hp)
             player.energy = min(player.max_energy, player.energy + item_stats.energy_change)
+            player.save()
+            return send_player_data(player, "success")
 
+        # Логика для предметов которые нельзя использовать
         elif item_stats.item_type in ["guitar", "eqp", "jacket", "t-shirt", "pants", "boots"]:
+            # Если предмет экипирован то статы снимаются и сама шмотка тоже
             if item.is_equipped:
                 player.charisma_bonus -= item_stats.charismabonus 
                 player.xp_bonus -= item_stats.xpbonus - 1
                 item.is_equipped = False
                 item.save()
-                return jsonify({
-                    "status": "unequipped",
-                    "hp": player.hp,
-                    "energy": player.energy,
-                    "food": player.satiety,
-                    "water": player.hydration,
-                    "money": player.money,
-                    "xp": player.xp,
-                    "time": player.time
-                })
-                
+                return send_player_data(player, "unequipped")
+            # Если слот занят другой шмоткой такого же типа то сервер не даст надеть его
             already_equipped = (Inventory.select().join(Items).where(Inventory.player_id == player.id, Inventory.is_equipped == True, Items.item_type == item_stats.item_type).first())
             if already_equipped:
                 return jsonify({"status": "item_type_is_equipped", "message": "Слот уже занят!"})
-            
+            # Обработка значений если предмет не был экипирован и слот свободный
             else:
                 player.charisma_bonus += item_stats.charismabonus 
                 player.xp_bonus += item_stats.xpbonus - 1
@@ -114,20 +216,11 @@ def use_item():
                 item.save()
         player.save()
 
-    # Возвращаем ВСЕ статы, чтобы JS обновил полоски
-    return jsonify({
-        "status": "success",
-        "hp": player.hp,
-        "energy": player.energy,
-        "food": player.satiety,
-        "water": player.hydration,
-        "money": player.money,
-        "xp": player.xp,
-        "time": player.time,
-        "is_equipped":item.is_equipped
-    })
+        # Возвращаем ВСЕ статы, чтобы JS обновил полоски
+        return send_player_data(player, "success", extra_data={"is_equipped":item.is_equipped})
+    
 
-
+# Отрисовка инвентаря игрока 
 @app.route('/get_inventory')
 def get_inventory():
     if not session.get("login"):
@@ -147,8 +240,10 @@ def get_inventory():
         })
     return jsonify(items_list)
 
+# Функция выбора решения 
 @app.route("/choice", methods=["POST"])
 def choice():
+    # Получение данных
     player = Player.get_or_none(login=session.get("login"))
     data = request.get_json()
     situation_id = data.get("situation_id")
@@ -170,26 +265,20 @@ def choice():
         new_rel.save()
     player.save()
 
-    return jsonify({"status":"success",
-                    "result":text,
-                    "hp":player.hp,
-                    "energy":player.energy,
-                    "food":player.satiety,
-                    "water":player.hydration,
-                    "time":player.time,
-                    "xp":player.xp,
-                    "money":player.money,
-                    })
+    return send_player_data(player, "success", extra_data={"result":text})
 
 
 #Обработка кликера
 @app.route('/click', methods=['POST'])
 def click():
-    
+    # Получение данных игрока и кулдаунов
     player = Player.get_or_none(login=session.get("login"))
-    Cooldowns.update(available_at=Cooldowns.available_at - 10).where((Cooldowns.player_id == player.id)&(Cooldowns.available_at >= 10)).execute()
 
+    # Кулдауны
+    Cooldowns.update(available_at=Cooldowns.available_at - 10).where((Cooldowns.player_id == player.id)&(Cooldowns.available_at >= 10)).execute()
     print("КЛИК")
+
+    # Убийство игрока сразу или предоставление второго шанса за 50$
     if player.hp <= 0 and player.money >= 50:
         player.hp = 30           
         player.energy = 50       
@@ -201,78 +290,98 @@ def click():
     if player.hp <= 0:
         Player.delete().where(id=player.id).execute()
         session.clear()
-        
         return jsonify({
             "status":"death"
         })
     
-    if player.hp > 0:
-        player.satiety = max(0,player.satiety -2)
-        player.hydration = max(0,player.hydration -3)
-        if player.satiety <= 0 or player.hydration <= 0:
-            player.energy = max(0,player.energy -10)
-        if player.energy <= 0:
-            player.hp = max(0,player.hp -10)
-        
-        if not player.job: 
-            player.time += 10
-            player.energy = max(0,player.energy -1 )
-            if player.location_id == 1:
-                player.xp += int(10 * player.xp_bonus)
-            if player.location_id == 2:
-                player.xp += int(15 * player.xp_bonus)
-            if player.location_id == 3:
-                player.xp += int(20 * player.xp_bonus)
-        
+    """ТУТ БУДЕТ ПЕРЕРАБОТКА БАЛАНСА"""
+    # Трата голода и воды 
+    player.satiety = max(0,player.satiety -2)
+    player.hydration = max(0,player.hydration -3)
 
-            for situation in Random_situation.select().where(Random_situation.location_id==player.location_id):
-                cooldown = Cooldowns.get_or_none(player_id=player.id, situation_id=situation.id)
-                random_num = random.randint(0,100)
-                if random_num <= situation.chance:
-                    if cooldown and cooldown.available_at <= 0:
-                        results = Situation_results.get_or_none(situation_id = situation.id)
-                        Cooldowns.update(available_at = random.randrange(1440, 2881, 10), situation_id=situation.id,player_id=player.id).where(player_id=player.id,situation_id=situation.id).execute()
-                        player.save()
-                        return jsonify({
-                            "status":"active",
-                            "situation_id":situation.id,
-                            "name":situation.name,
-                            "description":situation.description,
-                            "choice":[situation.choice_name1,situation.choice_name2,situation.choice_name3,]
-                        })
-                    elif not cooldown:
-                        results = Situation_results.get_or_none(situation_id = situation.id)
-                        Cooldowns.create(available_at=random.randrange(1440, 2881, 10), situation_id=situation.id,player_id=player.id)
-                        player.save()
-                        return jsonify({
-                            "status":"active",
-                            "situation_id":situation.id,
-                            "name":situation.name,
-                            "description":situation.description,
-                            "choice":[situation.choice_name1,situation.choice_name2,situation.choice_name3,]
-                        })
-        elif player.job:
-            job = player.job
-            player.money += job.salary
-            player.xp += int(1 * player.xp_bonus)
-            player.energy = max(0, player.energy - job.energy_cost)
-            player.time += job.time_cost
+    # Если нет воды или еды -10 энергии
+    if player.satiety <= 0 or player.hydration <= 0:
+        player.energy = max(0,player.energy -10)
+        # Если нет энергии трата 10 хп
+    if player.energy <= 0:
+        player.hp = max(0,player.hp -10)
+    """ТУТ БУДЕТ ПЕРЕРАБОТКА БАЛАНСА"""
+
+    
+    if not player.job: 
+        player.time += 10
+        player.energy = max(0,player.energy -1 )
+        player.xp += round(player.location.base_xp * player.xp_bonus)
+        event = random_event(player)
+        if event:
+            return event
+
+    elif player.job:
+        job = player.job
+        player.money += job.salary
+        player.xp += int(1 * player.xp_bonus)
+        player.energy = max(0, player.energy - job.energy_cost)
+        player.time += job.time_cost
+
 
     if player.time >= 1440:
         player.time = player.time - 1440
         player.days += 1
     player.save()   
-    return jsonify({ 
-        "hp":player.hp,
-        "energy":player.energy,
-        "food":player.satiety,
-        "water":player.hydration,
-        "time":player.time,
-        "xp":player.xp,
-        "money":player.money
-    })
+
+    return send_player_data(player, "success")
+
+"""ЧИТЫ"""
+# Функции-читы
+def cheat_money(player):
+    player.money += request.args.get("money", default=0, type=float)
+    player.save()
+def cheat_xp(player):
+    player.xp += request.args.get("xp", default=0, type=int)
+    player.save()
+def cheat_stats(player):
+    player.hp, player.energy,player.satiety,player.hydration = player.max_hp, player.max_energy,player.max_satiety,player.max_hydration
+    player.save()
+def cheat_cooldowns(player):
+    Cooldowns.update(available_at = 0).where(Cooldowns.player_id==player.id).execute()
+
+# Словарь на читы
+
+cheat_map = {
+    "add_money": cheat_money,
+    "add_xp": cheat_xp,
+    "reset_cooldowns": cheat_cooldowns,
+    "full_stats" : cheat_stats
+}
+# Описание маршрутов
+@app.route("/admin")
+def admin():
+    player = Player.get_or_none(login = session.get("login"))
+    if not player:
+        return redirect("/")
+    cooldowns = player.cooldowns
+
+
+
+    return render_template("admin.html", player=player, cooldowns=cooldowns)
+
+@app.route("/admin/cheats", methods=["GET"])
+def admin_cheats():
+    player = Player.get_or_none(login = session.get("login"))
+    if not player:
+        return redirect("/")
+    
+    action = request.args.get("action")
+    cheat_func = cheat_map.get(action)
+    if cheat_func:
+        cheat_func(player)
+    return redirect("/admin")
     
 
+
+
+
+"""ОСНОВНЫЕ МАРШРУТЫ И ЛОКАЦИИ"""
 #Главная страница (Карта)
 @app.route("/map")
 def map():

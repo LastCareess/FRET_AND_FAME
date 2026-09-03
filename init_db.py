@@ -6,19 +6,19 @@ def fill_db():
         # --- НАПИТКИ ---
         {'name': 'Кофе', 'item_type': 'drink', 'price': 10, 'restore_hydration': 10, 'energy_change': 30, 
          'description': 'Горькая жижа из автомата. Единственное, что держит тебя на ногах после ночной репетиции.'},
-        {'name': 'Энергетик', 'item_type': 'drink', 'price': 5, 'restore_hydration': 5, 'energy_change': 10, 
+        {'name': 'Энергетик', 'item_type': 'drink', 'price': 5, 'restore_hydration': 10, 'energy_change': 15, 
          'description': 'Дешевый шипучий напиток. Сердце стучит быстрее, но руки почему-то трясутся.'},
-        {'name': 'Пиво', 'item_type': 'drink', 'price': 1, 'restore_hydration': 20, 'energy_change': 20, 'influence_on_hp': -5, 
+        {'name': 'Пиво', 'item_type': 'drink', 'price': 1, 'restore_hydration': 15, 'energy_change': 20, 'influence_on_hp': -5, 
          'description': 'Теплая банка сомнительного пойла. Ты чувствуешь себя рок-звездой, но печень не согласна.'},
         {'name': 'Вода', 'item_type': 'drink', 'price': 1, 'restore_hydration': 30, 
          'description': 'Обычная вода из-под крана в пластиковой бутылке. Жизненно необходима для связок.'},
 
         # --- ЕДА ---
-        {'name': 'Дешевый обед', 'item_type': 'food', 'price': 3, 'restore_satiety': 10, 
+        {'name': 'Дешевый обед', 'item_type': 'food', 'price': 3, 'restore_satiety': 10, "energy_change":1,
          'description': 'Подгоревший хот-дог с заправки. Желудок ворчит, но выбора нет.'},
-        {'name': 'Средний обед', 'item_type': 'food', 'price': 10, 'restore_satiety': 40, 
+        {'name': 'Средний обед', 'item_type': 'food', 'price': 10, 'restore_satiety': 40,  "energy_change":5,
          'description': 'Бизнес-ланч в местной забегаловке. Почти как настоящая домашняя еда.'},
-        {'name': 'Большой обед', 'item_type': 'food', 'price': 20, 'restore_satiety': 100, 
+        {'name': 'Большой обед', 'item_type': 'food', 'price': 20, 'restore_satiety': 100, "energy_change":10,
          'description': 'Настоящий пир из стейка и картошки. Ты готов свернуть горы (или хотя бы перетащить усилитель).'},
 
         # --- ЛЕКАРСТВА ---
@@ -28,6 +28,10 @@ def fill_db():
          'description': 'Стерильный бинт. Полезен, когда струна рвется прямо во время соло и режет пальцы.'},
         {'name': 'Пластырь', 'item_type': 'meds', 'price': 20, 'influence_on_hp': 5, 
          'description': 'Маленький пластырь с забавным рисунком. Чисто символическая помощь.'},
+        {"name":"Непонятная таблетка", 'item_type':'meds', 'price':10, 'influence_on_hp':10, 'restore_hydration':-10,
+         'description': 'Таблетка из переулка, кто знает что она делает'},
+        {"name":"Сигаретка", 'item_type':'meds', 'price':5, 'influence_on_hp':-10, 'restore_hydration':-10, 'energy_change':30,
+         'description': 'Сигаретка'},
 
         # --- ГИТАРЫ ---
         {'name': 'Старый страт', 'item_type': 'guitar', 'price': 0, 'charismabonus': 0, 'xpbonus': 1.0, 
@@ -162,7 +166,7 @@ def fill_db():
 
     jobs_data = [
         {"name":"Собирать бутылки",
-         "salary":0.4,
+         "salary":0.7,
          "need_xp":0,
          "need_charisma":0,
          "energy_cost":2,
@@ -172,20 +176,20 @@ def fill_db():
          "access":True
         },
         {"name":"Играть попсу",
-         "salary":2.5,
+         "salary":3,
          "need_xp":1500,
          "need_charisma":20,
-         "energy_cost":6,
+         "energy_cost":5,
          "time_cost":30,
          "open_from":480,
          "open_to":1320,
          "access":False
         },
         {"name":"Выступить в местной забегаловке",
-         "salary":30,
+         "salary":20,
          "need_xp":3000,
          "need_charisma":40,
-         "energy_cost":20,
+         "energy_cost":15,
          "time_cost":60,
          "open_from":480,
          "open_to":1320,

@@ -278,6 +278,12 @@ def click():
     Cooldowns.update(available_at=Cooldowns.available_at - 10).where((Cooldowns.player_id == player.id)&(Cooldowns.available_at >= 10)).execute()
     print("КЛИК")
 
+    # Если нет воды или еды -10 энергии
+    if player.satiety <= 0 or player.hydration <= 0:
+        player.energy = max(0,player.energy -10)
+        # Если нет энергии трата 10 хп
+    if player.energy <= 0:
+        player.hp = max(0,player.hp -10)
     # Убийство игрока сразу или предоставление второго шанса за 50$
     if player.hp <= 0 and player.money >= 50:
         player.hp = 30           
@@ -296,15 +302,10 @@ def click():
     
     """ТУТ БУДЕТ ПЕРЕРАБОТКА БАЛАНСА"""
     # Трата голода и воды 
-    player.satiety = max(0,player.satiety -2)
-    player.hydration = max(0,player.hydration -3)
+    player.satiety = max(0,player.satiety -1)
+    player.hydration = max(0,player.hydration -2)
 
-    # Если нет воды или еды -10 энергии
-    if player.satiety <= 0 or player.hydration <= 0:
-        player.energy = max(0,player.energy -10)
-        # Если нет энергии трата 10 хп
-    if player.energy <= 0:
-        player.hp = max(0,player.hp -10)
+    
     """ТУТ БУДЕТ ПЕРЕРАБОТКА БАЛАНСА"""
 
     
@@ -314,14 +315,20 @@ def click():
         player.xp += round(player.location.base_xp * player.xp_bonus)
         event = random_event(player)
         if event:
+            player.save() 
             return event
 
     elif player.job:
         job = player.job
-        player.money += job.salary
+        player.money = round(job.salary + player.money, 2)
         player.xp += int(1 * player.xp_bonus)
         player.energy = max(0, player.energy - job.energy_cost)
         player.time += job.time_cost
+
+        event = random_event(player)
+        if event:
+            player.save() 
+            return event
 
 
     if player.time >= 1440:

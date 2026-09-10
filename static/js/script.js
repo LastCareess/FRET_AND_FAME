@@ -119,6 +119,8 @@ if (openInvBtn) {
         // ПРОВЕРКА: Если сервер вернул активную ситуацию
         if (data.status === "active") {
           showEventModal(data);
+        } else if (data.status==="death"){
+          window.location.href = "/death"
         } else {
           // Если просто клик — обновляем всё как обычно
           updateUI(data);

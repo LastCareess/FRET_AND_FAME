@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character HUD Interface</title>
+    <link rel="stylesheet" href="../static/css/main.css">
+</head> 
+<body id="click">
+
+    <header class="hud-header">
+        <!-- 1. Место для картинки (аватарки) -->
+        <div class="hud-block avatar-block">
+            <img src="img/avatar.png" alt="Аватарка">
+        </div>
+
+        <!-- 2. Имя и Возраст -->
+        <div class="hud-block info-block">
+            <div class="NameDiv">{{player.name}}</div>
+            <div class="AgeDiv">{{player.age}}</div>
+        </div>
+
+        <!-- 3. Основные полоски потребностей -->
+        <div class="hud-block stats-text-block">
+            <div class="stats">
+                <div class="stat-row hp">
+                    <div class="bar"><div id="hp-fill" class="fill"></div></div>
+                    <span>{{player.hp}}HP/{{player.max_hp}}HP</span>
+                </div>
+                <div class="stat-row energy">
+                    <div class="bar"><div id="energy-fill" class="fill"></div></div>
+                    <span>{{player.energy}}/{{player.max_energy}} ENERGY</span>
+                </div>
+                <div class="stat-row hydration">
+                    <div class="bar"><div id="water-fill" class="fill"></div></div>
+                    <span>{{player.hydration}}/{{player.max_hydration}} WATER</span>
+                </div>
+                <div class="stat-row satiety">
+                    <div class="bar"><div id="food-fill" class="fill"></div></div>
+                    <span>{{player.satiety}}/{{player.max_satiety}} FOOD</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Центральный блок с полосками опыта и стат -->
+        <div class="hud-block main-bars-block">
+
+            <div class="XP-NextLvl">
+                <div class="xp-bar">
+                    <div id="xp-fill" class="AvailableEx"></div>
+                    <div class="xp-text">
+                        <span id="current-xp">{{player.xp}}</span> / <span id="max-xp">5000</span>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- 5. Время и деньги -->
+        <div class="hud-block finance-block">
+            <div class="TimeDiv">
+        <span class="HourDiv">{{hours}}</span>:<span class="MinuteDiv">{{minutes}}</span>
+            </div>
+            <div class="money-label">{{player.money}}</div>
+        </div>
+    </header>
+
+    <!-- Основная пустая область страницы под шапкой -->
+    <main class="main-content">
+        <img src="/static/img/location-items/background_trailer_day_door.png">
+        <!-- Блок для карты в правом нижнем углу -->
+        <div class="map-block">
+            <div class="map-placeholder">Карта города</div>
+        </div>
+
+    </main>
+
+<script src="../static/js/script.js"></script>
+</body>
+</html>

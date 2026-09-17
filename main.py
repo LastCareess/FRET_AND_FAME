@@ -381,6 +381,17 @@ def admin_cheats():
 
 
 """ОСНОВНЫЕ МАРШРУТЫ И ЛОКАЦИИ"""
+# Тестовая ветка хедер-мейн
+@app.route("/main")
+def main():
+    player = Player.get_or_none(Player.login == session.get("login"))
+
+    hours = player.time // 60
+    minutes = player.time % 60
+
+    return render_template("main.html", player=player, hours=hours, minutes=minutes)
+
+
 # Страница смерти игрока
 @app.route("/death")
 def death():

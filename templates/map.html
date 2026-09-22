@@ -4,121 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Интерактивная карта районов</title>
-    <style>
-        /* Обнуляем отступы браузера и центрируем игру на экране */
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden; 
-            background-color: #1a1a24; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* 
-           Игровой контейнер: теперь он подстраивается ПОД РАЗМЕР КАРТИНКИ.
-           max-width и max-height гарантируют, что он не вылезет за границы экрана ни в обычном режиме, ни в F11.
-        */
-        .map-container {
-            position: relative; 
-            display: inline-block; /* Важно: контейнер сожмется ровно по ширине картинки */
-            max-width: 100vw;
-            max-height: 100vh;
-            box-shadow: 0 0 40px rgba(0,0,0,0.6);
-        }
-
-        /* 
-           Фоновое изображение карты. 
-           Оно диктует размеры всему контейнеру. 
-           Используем max-height, чтобы при F11 картинка аккуратно росла, не ломая пропорций.
-        */
-        .map-image {
-            display: block;
-            max-width: 100vw;
-            max-height: 100vh;
-            width: auto;
-            height: auto;
-            pointer-events: none; 
-        }
-
-        /* Общий стиль для вырезанных районов */
-        .map-object {
-            position: absolute;
-            z-index: 10;
-            cursor: pointer;
-        }
-
-        /* Картинка района внутри контейнера */
-        .map-object img {
-            width: 100%;
-            height: auto; 
-            display: block;
-            transition: filter 0.2s ease;
-        }
-
-        /* Эффект плавного неонового свечения вокруг контура района при наведении */
-        .map-object:hover img {
-            filter: drop-shadow(0 0 15px #51ff00) drop-shadow(0 0 5px #51ff00);
-            z-index: 15; 
-        }
-
-        /* Всплывающая подсказка с названием района */
-        .map-object::after {
-            content: attr(data-title); 
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); 
-            background-color: rgba(0, 0, 0, 0.85);
-            color: #fff;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-family: sans-serif;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-            transition: opacity 0.2s ease;
-            z-index: 20;
-        }
-
-        .map-object:hover::after {
-            opacity: 1;
-        }
-
-        /* 
-           ВАШИ КООРДИНАТЫ РАЙОНОВ
-           Поскольку теперь контейнер идеально равен картинке, 
-           эти проценты будут стоять намертво при любом масштабе и F11!
-        */
-        #district-1 { top: 0%; left: 0%; width: 38%; } 
-        #district-2 { top: 0%; left: 35.5%; width: 33.5%; }
-        #district-3 { top: 0%; left: 64%; width: 36%; }
-        #district-4 { top: 58%; left: 0%; width: 38%; }
-        #district-5 { top: 53%; left: 33%; width: 39%; }
-        #district-6 { top: 50%; left: 64%; width: 36%; }
-
-    </style>
+    <link rel="stylesheet" href=" ../static/css/test.css">
 </head>
 <body>
-
     <div class="map-container">
         <!-- Оригинальная карта (задний фон) -->
         <img src="../static/img/background-map.jpg" alt="Карта" class="map-image">
 
         <!-- Вырезанные районы-пазлы -->
         <div class="map-object" id="district-1" data-title="Трейлерный парк">
+            <a href="/main">
             <img src="../static/img/map-details/map-trailer-park.png" alt="Район 1">
+            </a>
         </div>
-        
+
         <div class="map-object" id="district-2" data-title="Торговый квартал">
+            <a href="/shop">
             <img src="../static/img/map-details/map-store.png" alt="Район 2">
+            </a>
         </div>
-        
+
         <div class="map-object" id="district-3" data-title="Городской парк">
             <img src="../static/img/map-details/map-city-park.png" alt="Район 3">
         </div>
@@ -126,15 +31,15 @@
         <div class="map-object" id="district-4" data-title="Порт">
             <img src="../static/img/map-details/map-port.png" alt="Район 4">
         </div>
-        
+
         <div class="map-object" id="district-5" data-title="Бар">
             <img src="../static/img/map-details/map-bar.png" alt="Район 5">
         </div>
-        
+
         <div class="map-object" id="district-6" data-title="Метро">
             <img src="../static/img/map-details/map-metro.png" alt="Район 6">
         </div>
     </div>
-
 </body>
 </html>
+

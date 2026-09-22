@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Character HUD Interface</title>
     <link rel="stylesheet" href="../static/css/main.css">
-</head> 
 <body>
-
     <header class="hud-header">
         <!-- 1. Место для картинки (аватарки) -->
         <div class="hud-block avatar-block">
@@ -71,16 +67,16 @@
                 </a>
             </div>
         </div>
-        
     </header>
 
-    <!-- Основная пустая область страницы под шапкой -->
-    <main class="main-content" >
-        <img src="/static/img/location-items/background_trailer_day_door.png" id="click"  >
-        <!-- Блок для карты в правом нижнем углу -->
-
-    </main>
-
-<script src="../static/js/script.js"></script>
-</body>
-</html>
+    <main class="main-content-shop">
+    <div class="location-menu-wrapper">
+        <h2 class="menu-title" id="menu-title">Категория</h2>
+        <button class="back-menu-btn hidden" id="back-btn" onclick="showCategories()">НАЗАД</button>
+        
+        <div class="location-buttons-grid" id="menu-buttons-container">
+            
+        </div>
+    </div>
+    <script src="../static/js/shop.js"></script>
+</main>

@@ -6,6 +6,22 @@ from peewee import fn
 app = Flask("myapp")
 app.secret_key = 'Poawlh9aw1982;lawfi'
 """
+Сделаны дизайны карты и подключены к бэку
+В базе сделаны аватарки и их пути
+
+"""
+
+
+
+
+
+
+
+
+
+
+
+"""
 Идеи для улучшения кода:
 1.Вынос в отдельную функцию кода для возврата json-а
 2.Разделение обязанностей в функции использования предметов
@@ -381,6 +397,7 @@ def admin_cheats():
 
 
 """ОСНОВНЫЕ МАРШРУТЫ И ЛОКАЦИИ"""
+#Новые адреса
 # Тестовая ветка хедер-мейн
 @app.route("/main")
 def main():
@@ -390,6 +407,7 @@ def main():
     minutes = player.time % 60
 
     return render_template("main.html", player=player, hours=hours, minutes=minutes)
+#Новые адреса
 
 
 # Страница смерти игрока
@@ -399,16 +417,23 @@ def death():
         return redirect("/trailer")
     return render_template("death.html")
 
-
+#Новые адреса
 #Главная страница (Карта)
 @app.route("/map")
 def map():
     return render_template("map.html")
 
+@app.route("/shop")
+def new_shop():
+    player = Player.get_or_none(Player.login == session.get("login"))
+    return render_template("new_shop.html", player=player)
+
 @app.route("/store")
 def store():
+    
     store_items = Items.select()
     return render_template("store.html",store_items=store_items)
+#Новые адреса
 
 #Трейлер 
 @app.route("/trailer")

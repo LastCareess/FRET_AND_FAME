@@ -39,6 +39,11 @@ class BaseModel(Model):
     class Meta:
         database = db
 
+class Avatars(BaseModel):
+    name = CharField()
+    link = CharField()
+
+
 
 class Locations(BaseModel):
     name = CharField()
@@ -61,6 +66,7 @@ class Jobs(BaseModel):
     access = BooleanField(default=False)
     
 class Player(BaseModel):
+    avatar = ForeignKeyField(Avatars, backref="players")
     login = CharField(unique=True)
     password = CharField()
     hp = IntegerField(default=100)
@@ -163,7 +169,7 @@ class Inventory(BaseModel):
 
 
 
-db.create_tables([Locations,Player,Npc,Band,Bandmember,Jobs,Random_situation,Situation_results,Cooldowns,Items,Inventory,Relations])
+db.create_tables([Avatars,Locations,Player,Npc,Band,Bandmember,Jobs,Random_situation,Situation_results,Cooldowns,Items,Inventory,Relations])
 
  
 

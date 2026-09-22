@@ -1,0 +1,77 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; 
+    background-color: #1a1a24; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.map-container {
+    position: relative; 
+    display: inline-block;
+    max-width: 100vw;
+    max-height: 100vh;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+}
+
+.map-image {
+    display: block;
+    max-width: 100vw;
+    max-height: 100vh;
+    width: auto;
+    height: auto;
+    pointer-events: none; 
+}
+
+.map-object {
+    position: absolute;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.map-object img {
+    width: 100%;
+    height: auto; 
+    display: block;
+    transition: filter 0.2s ease;
+}
+
+.map-object:hover img {
+    filter: drop-shadow(0 0 15px #51ff00) drop-shadow(0 0 5px #51ff00);
+    z-index: 15; 
+}
+
+.map-object::after {
+    content: attr(data-title); 
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: sans-serif;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    transition: opacity 0.2s ease;
+    z-index: 20;
+}
+
+.map-object:hover::after {
+    opacity: 1;
+}
+
+#district-1 { top: 0%; left: 0%; width: 38%; } 
+#district-2 { top: 0%; left: 35.5%; width: 33.5%; }
+#district-3 { top: 0%; left: 64%; width: 36%; }
+#district-4 { top: 58%; left: 0%; width: 38%; }
+#district-5 { top: 53%; left: 33%; width: 39%; }
+#district-6 { top: 50%; left: 64%; width: 36%; }

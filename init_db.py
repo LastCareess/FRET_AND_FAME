@@ -2,6 +2,21 @@ from models import *
 
 
 def fill_db():
+    avatars = [
+        {'name':'avatar-1', "link":'/static/img/avatars/avatar-1.jpg'},
+        {'name':'avatar-2', "link":'/static/img/avatars/avatar-2.jpg'},
+        {'name':'avatar-3', "link":'/static/img/avatars/avatar-3.jpg'},
+        {'name':'avatar-4', "link":'/static/img/avatars/avatar-4.jpg'},
+        {'name':'avatar-5', "link":'/static/img/avatars/avatar-5.jpg'},
+        {'name':'avatar-6', "link":'/static/img/avatars/avatar-6.jpg'},
+        {'name':'avatar-7', "link":'/static/img/avatars/avatar-7.jpg'},
+        {'name':'avatar-8', "link":'/static/img/avatars/avatar-8.jpg'}
+    ]
+    for data in avatars:
+        Avatars.get_or_create(name=data['name'], defaults={'link': data['link']})
+        print("БАЗА ЗАПОЛНЕНА Аватарками!")
+
+
     items_data = [
         # --- НАПИТКИ ---
         {'name': 'Кофе', 'item_type': 'drink', 'price': 10, 'restore_hydration': 10, 'energy_change': 30, 

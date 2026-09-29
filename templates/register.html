@@ -69,6 +69,35 @@
           Ваш браузер не поддерживает элемент audio.
           </audio>
           
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 15px; max-width: 500px; margin: 20px 0; font-family: sans-serif;">
+  
+            {% for avatar in avatars %}
+            <label class="avatar-label" style="cursor: pointer; display: block;">
+              
+              <!-- Скрытая радиокнопка -->
+              <input type="radio" name="avatar_id" value="{{ avatar.id }}" class="avatar-radio" style="position: absolute; opacity: 0; width: 0; height: 0;">
+              
+              <!-- Карточка аватара с базовыми инлайн-стилями -->
+              <div class="avatar-box" style="display: flex; flex-direction: column; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 12px; background-color: #ffffff; box-sizing: border-box;">
+                
+                <!-- Круглая картинка -->
+                <img src="{{ avatar.link }}" alt="{{ avatar.name }}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; pointer-events: none;">
+                
+                <!-- Имя -->
+                <span style="font-size: 13px; color: #333333; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; pointer-events: none;">
+                  {{ avatar.name }}
+                </span>
+                
+              </div>
+            </label>
+            {% endfor %}
+
+          </div>
+
+          
+
+
+
           <button type="submit">Играть</button><br />
 
           <div class="auth-link" style="margin-top: 15px; text-align: center">

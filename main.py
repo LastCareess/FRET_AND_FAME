@@ -402,11 +402,11 @@ def admin_cheats():
 @app.route("/main")
 def main():
     player = Player.get_or_none(Player.login == session.get("login"))
-
+    avatar = Avatars.get_or_none(Avatars.id == player.avatar)
     hours = player.time // 60
     minutes = player.time % 60
 
-    return render_template("main.html", player=player, hours=hours, minutes=minutes)
+    return render_template("main.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
 #Новые адреса
 
 
@@ -534,6 +534,7 @@ def small_concert():
 #Регистрация
 @app.route('/', methods=["GET","POST"])
 def register():
+    avatars = Avatars.select()
     if request.method == "POST":
         session.clear()
         login = request.form["login"]
@@ -541,14 +542,16 @@ def register():
         password2 = request.form["password2"]
         name = request.form["name"]
         age = request.form["age"]
+        avatar = request.form["avatar_id"]
+        
         location = "trailer"
-        if not all([login,password1,password2,name,age]):
+        if not all([login,password1,password2,name,age,avatar]):
             return "Пропущены поля"
         if password1 == password2:
             if Player.get_or_none(login=login):
                 return "Логин занят"
             else:
-                new_player = Player.create(login = login, password = password1, name=name, age=age, location=1, xp_bonus=1.0, money=100, time=360)
+                new_player = Player.create(login = login, password = password1, name=name, age=age, avatar=avatar, location=1, xp_bonus=1.0, money=100, time=360)
                 starter_items = Items.select().where(Items.price == 0)
 
                 for item in starter_items:
@@ -569,7 +572,7 @@ def register():
         else:
             return "Ошибка"
     
-    return render_template('register.html')
+    return render_template('register.html', avatars=avatars)
 
 #Авторизация
 @app.route('/auth', methods=["GET","POST"])

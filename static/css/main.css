@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Underdog&display=swap');
 /* ==========================================================================
    1. БАЗОВЫЕ СБРОСЫ И СТИЛИ СТРАНИЦЫ
    ========================================================================== */
@@ -8,7 +9,8 @@
 }
 
 body {
-    font-family: 'Arial Black', Arial, sans-serif; /* Игровой плотный шрифт */
+    font-family: "Underdog", serif; /* Игровой плотный шрифт */
+    font-size: 30px;
     background-color: #121212;
     color: #ffffff; /* Белый текст для контраста */
 }

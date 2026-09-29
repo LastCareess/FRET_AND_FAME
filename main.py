@@ -14,13 +14,6 @@ app.secret_key = 'Poawlh9aw1982;lawfi'
 
 
 
-
-
-
-
-
-
-
 """
 Идеи для улучшения кода:
 1.Вынос в отдельную функцию кода для возврата json-а
@@ -407,6 +400,15 @@ def main():
     minutes = player.time % 60
 
     return render_template("main.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
+
+@app.route("/inside_trailer")
+def inside_trailer():
+    player = Player.get_or_none(Player.login == session.get("login"))
+    avatar = Avatars.get_or_none(Avatars.id == player.avatar)
+    hours = player.time // 60
+    minutes = player.time % 60
+
+    return render_template("inside-trailer.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
 #Новые адреса
 
 
@@ -426,7 +428,8 @@ def map():
 @app.route("/shop")
 def new_shop():
     player = Player.get_or_none(Player.login == session.get("login"))
-    return render_template("new_shop.html", player=player)
+    avatar = Avatars.get_or_none(Avatars.id == player.avatar)
+    return render_template("new_shop.html", player=player, avatar=avatar)
 
 @app.route("/store")
 def store():

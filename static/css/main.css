@@ -272,6 +272,39 @@ body {
     text-shadow: 1px 1px 2px #000000;
 }
 
+/* Last нашкодил с дверью */
+
+/* Контейнер для двери (задает позицию на экране) */
+.trailer-door {
+    position: absolute;
+    
+    /* КООРДИНАТЫ: настройте под ваш фон */
+    bottom: 28%;       /* Расстояние от низа игровой зоны (можно в px, например 100px) */
+    left: 51.5%;         /* Смещение вбок (в процентах от ширины экрана) */
+    
+    /* РАЗМЕРЫ: задают рамки для картинки двери */
+    width: 90px;      
+    height: auto;      /* Высота подстроится автоматически под пропорции картинки */
+    
+    z-index: 10;       /* Дверь будет поверх фона */
+}
+
+/* Стили самой картинки внутри блока двери */
+.trailer-door img {
+    width: 100%;       /* Картинка займет всю ширину контейнера .trailer-door */
+    height: auto;
+    display: block;
+    cursor: pointer;   /* Превращает курсор в палец при наведении */
+    transition: transform 0.2s ease, filter 0.2s ease; /* Плавный эффект */
+}
+
+/* Эффект при наведении мыши (дверь слегка увеличивается и подсвечивается) */
+.trailer-door img:hover {
+    transform: scale(1.05); 
+    filter: brightness(1.2) drop-shadow(0 0 10px #00ff22);
+}
+
+
 /* 
 ==========================================================================================================================================================================================
 ==========================================================================================================================================================================================
@@ -287,12 +320,69 @@ body {
     border-top: none; 
     position: relative; 
 
-    background-image: url('game_background_img/background-inside-trailer.jpg'); 
+    background-image: url('/static/img/location-img/background-inside-trailer.jpg'); 
     background-size: cover;          
     background-position: center;      
     background-repeat: no-repeat;     
 }
 
+/* LAST НАШКОДИЛ С ВНУТРЯНКОЙ ТРЕЙЛЕРА */
+
+/* Родителю обязательно задаем relative, чтобы координаты предметов считались от него */
+.main-content-inside-trailer {
+    position: relative;
+    width: 100%;
+    min-height: calc(100vh - 180px);
+    background-image: url('../img/location-img/background-inside-trailer.jpg'); /* Ваш фон внутри */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* БАЗОВЫЕ ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ ПРЕДМЕТОВ (Экономит кучу строк кода) */
+.interactive-item {
+    position: absolute;
+    z-index: 5;
+}
+.interactive-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+.interactive-item img:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2) drop-shadow(0 0 10px #00ffcc);
+}
+
+/* ==========================================================================
+   УНИКАЛЬНЫЕ КООРДИНАТЫ (Подстройте под свой фон)
+   ========================================================================== */
+
+.inside-trailer-guitar {
+    bottom: 16%;
+    left: 25%;
+    width: 190px;
+}
+
+.inside-trailer-chair {
+    bottom: 10%;
+    left: 57%;
+    width: 15%;
+}
+
+.inside-trailer-computer {
+    bottom: 50%;
+    left: 34.5%;
+    width: 130px;
+}
+
+.inside-trailer-door {
+    bottom: 0%;
+    left: 13%;
+    width: 250px;
+}
 
 /* 
 ==========================================================================================================================================================================================

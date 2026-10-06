@@ -361,7 +361,10 @@ cheat_map = {
     "reset_cooldowns": cheat_cooldowns,
     "full_stats" : cheat_stats
 }
+
+# ======================
 # Описание маршрутов
+# ======================
 @app.route("/admin")
 def admin():
     player = Player.get_or_none(login = session.get("login"))
@@ -384,9 +387,18 @@ def admin_cheats():
     if cheat_func:
         cheat_func(player)
     return redirect("/admin")
-    
 
-
+# Функция сна
+@app.route("/sleep")
+def sleep():
+    player = Player.get_or_none(login=session.get("login"))
+    player.hp = min(100, player.hp + 10)
+    player.energy = 100
+    player.time += 480
+    player.satiety = max(0, player.satiety - 30)
+    player.hydration = max(0, player.hydration - 40)
+    player.save()
+    return send_player_data(player, status="success")
 
 
 """ОСНОВНЫЕ МАРШРУТЫ И ЛОКАЦИИ"""

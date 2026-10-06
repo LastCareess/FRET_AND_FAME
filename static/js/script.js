@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const startEn = parseInt(document.querySelector(".energy span").innerText);
   const startWt = parseInt(document.querySelector(".hydration span").innerText);
   const startFd = parseInt(document.querySelector(".satiety span").innerText);
-  
+
   updateStat("hp-fill", startHP, 100);
   updateStat("energy-fill", startEn, 100);
   updateStat("water-fill", startWt, 100);
@@ -132,11 +132,11 @@ if (openInvBtn) {
     console.log("Обновление интерфейса данными:", data);
   
     const hpVal = parseInt(document.querySelector(".hp span").innerText);
-  const enVal = parseInt(document.querySelector(".energy span").innerText);
-  updateStat("hp-fill", data.hp, 100);
-  updateStat("energy-fill", data.energy, 100);
-  updateStat("water-fill", data.water, 100); // Добавь это
-  updateStat("food-fill", data.food, 100);  // Добавь это
+    const enVal = parseInt(document.querySelector(".energy span").innerText);
+    updateStat("hp-fill", data.hp, 100);
+    updateStat("energy-fill", data.energy, 100);
+    updateStat("water-fill", data.water, 100); // Добавь это
+    updateStat("food-fill", data.food, 100);  // Добавь это
 
     if (hourElem && minElem) {
       let hours = Math.floor(data.time / 60);
@@ -158,6 +158,40 @@ if (openInvBtn) {
     checkUnlocks();
   }
 
+    // Сон в трейлере, кнопка кресла от HELLWAY
+  const sleepBtn = document.getElementById("sleep")
+
+  sleepBtn.addEventListener('click', function(e){
+    e.preventDefault()
+
+    fetch('/sleep')
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "success") {
+        updateStat("hp-fill", data.hp, 100);
+        updateStat("energy-fill", data.energy, 100);
+        updateStat("water-fill", data.water, 100);
+        updateStat("food-fill", data.food, 100); 
+
+
+        document.querySelector(".hp span").innerText = `${data.hp}HP/100HP`;
+        document.querySelector(".energy span").innerText = `${data.energy}/100 ENERGY`;
+        document.querySelector(".hydration span").innerText = `${data.water}/100 WATER`;
+        document.querySelector(".satiety span").innerText = `${data.food}/100 FOOD`;
+        document.querySelector(".wallet-img").innerText = `💰 $${data.money}`;
+
+        if (hourElem && minElem) {
+          let hours = Math.floor(data.time / 60);
+          let minutes = data.time % 60;
+          hourElem.innerText = String(hours).padStart(2, '0');
+          minElem.innerText = String(minutes).padStart(2, '0');
+        }
+        alert("Отлично поспал)")
+      } else {
+        alert("Поспать не получилось")
+      }
+    })
+  })
   // Показ окна ситуации
   function showEventModal(data) {
     const eventModal = document.getElementById("event-modal");

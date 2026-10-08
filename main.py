@@ -397,6 +397,11 @@ def sleep():
     player.time += 480
     player.satiety = max(0, player.satiety - 30)
     player.hydration = max(0, player.hydration - 40)
+
+    if player.time >= 1440:
+            player.time = player.time - 1440
+            player.days += 1
+            
     player.save()
     return send_player_data(player, status="success")
 

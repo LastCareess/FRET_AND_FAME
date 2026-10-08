@@ -168,24 +168,7 @@ if (openInvBtn) {
     .then(response => response.json())
     .then(data => {
       if (data.status === "success") {
-        updateStat("hp-fill", data.hp, 100);
-        updateStat("energy-fill", data.energy, 100);
-        updateStat("water-fill", data.water, 100);
-        updateStat("food-fill", data.food, 100); 
-
-
-        document.querySelector(".hp span").innerText = `${data.hp}HP/100HP`;
-        document.querySelector(".energy span").innerText = `${data.energy}/100 ENERGY`;
-        document.querySelector(".hydration span").innerText = `${data.water}/100 WATER`;
-        document.querySelector(".satiety span").innerText = `${data.food}/100 FOOD`;
-        document.querySelector(".wallet-img").innerText = `💰 $${data.money}`;
-
-        if (hourElem && minElem) {
-          let hours = Math.floor(data.time / 60);
-          let minutes = data.time % 60;
-          hourElem.innerText = String(hours).padStart(2, '0');
-          minElem.innerText = String(minutes).padStart(2, '0');
-        }
+        updateUI(data)
         alert("Отлично поспал)")
       } else {
         alert("Поспать не получилось")

@@ -277,7 +277,7 @@ def choice():
 def click():
     # Получение данных игрока и кулдаунов
     player = Player.get_or_none(login=session.get("login"))
-
+    
     # Кулдауны
     Cooldowns.update(available_at=Cooldowns.available_at - 10).where((Cooldowns.player_id == player.id)&(Cooldowns.available_at >= 10)).execute()
     print("КЛИК")
@@ -331,10 +331,19 @@ def click():
             player.save() 
             return event
 
+    # Проверка на сюжет 
+    plot_situation = Plot_situations.get_or_none(need_xp = player.xp)
+    if plot_situation:
+        return send_player_data(player, status="plotEvent", extra_data={
+            "Text":plot_situation.text
+        })
 
     if player.time >= 1440:
         player.time = player.time - 1440
         player.days += 1
+
+
+    
     player.save()   
 
     return send_player_data(player, "success")
@@ -401,7 +410,7 @@ def sleep():
     if player.time >= 1440:
             player.time = player.time - 1440
             player.days += 1
-            
+
     player.save()
     return send_player_data(player, status="success")
 
@@ -448,16 +457,18 @@ def new_shop():
     avatar = Avatars.get_or_none(Avatars.id == player.avatar)
     return render_template("new_shop.html", player=player, avatar=avatar)
 
+
 @app.route("/store")
 def store():
-    
     store_items = Items.select()
     return render_template("store.html",store_items=store_items)
+
 #Новые адреса
 
 #Трейлер 
 @app.route("/trailer")
 def trailer():
+
     if session.get("is_auth") != True:
         return redirect("/")
     

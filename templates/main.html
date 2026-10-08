@@ -76,6 +76,9 @@
 
     <!-- Основная пустая область страницы под шапкой -->
     <main class="main-content" >
+        {%if player.xp == 0 %}
+        <h1 style="color: rgb(43, 139, 5); text-align: center;">Вы зашли в первый раз, зайдите в трейлер и нажмите на гитару</h1>
+        {%endif%}
         <div class="trailer-door">
             <a href="/inside_trailer">
             <img src="/static/img/location-items/trailer-day-door.png">

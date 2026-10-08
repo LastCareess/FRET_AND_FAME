@@ -1,5 +1,5 @@
 from peewee import SqliteDatabase, Model, CharField, IntegerField,BooleanField, FloatField
-from peewee import ForeignKeyField
+from peewee import ForeignKeyField, TextField
 from flask import jsonify
 
 db_path = 'database.db'
@@ -132,7 +132,9 @@ class Situation_results(BaseModel):
     choice_num = IntegerField()
     result_text = CharField()
 
-    
+class Plot_situations(BaseModel):
+    text = TextField()
+    need_xp = IntegerField()   
      
 class Cooldowns(BaseModel):
     player_id = ForeignKeyField(Player, backref="cooldowns")
@@ -169,7 +171,7 @@ class Inventory(BaseModel):
 
 
 
-db.create_tables([Avatars,Locations,Player,Npc,Band,Bandmember,Jobs,Random_situation,Situation_results,Cooldowns,Items,Inventory,Relations])
+db.create_tables([Avatars,Locations,Player,Npc,Band,Bandmember,Jobs,Random_situation,Situation_results,Cooldowns,Items,Inventory,Relations,Plot_situations])
 
  
 

@@ -121,7 +121,9 @@ if (openInvBtn) {
           showEventModal(data);
         } else if (data.status==="death"){
           window.location.href = "/death"
-        } else {
+        } else if (data.status==="plotEvent"){
+          showEventModal(data) }
+        else {
           // Если просто клик — обновляем всё как обычно
           updateUI(data);
         }

@@ -444,7 +444,7 @@ def inside_trailer():
     minutes = player.time % 60
 
     return render_template("inside-trailer.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
-#Новые адреса
+
 
 
 # Страница смерти игрока
@@ -454,7 +454,7 @@ def death():
         return redirect("/trailer")
     return render_template("death.html")
 
-#Новые адреса
+
 #Главная страница (Карта)
 @app.route("/map")
 def map():

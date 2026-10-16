@@ -127,7 +127,7 @@ if (openInvBtn) {
           const plotText = document.getElementById("plot-situation-text");
 
           if (plotModal && plotText) {
-            plotText.innerText = data.Text;
+            plotText.innerText = data.text;
             plotModal.style.display = "flex";
           }
         } else {
@@ -158,13 +158,12 @@ if (openInvBtn) {
     document.querySelector(".energy span").innerText = `${data.energy}/100 ENERGY`;
     document.querySelector(".hydration span").innerText = `${data.water}/100 WATER`;
     document.querySelector(".satiety span").innerText = `${data.food}/100 FOOD`;
-    document.querySelector(".wallet-img").innerText = `💰 $${data.money}`;
+    document.querySelector(".money-label").innerText = `💰 $${data.money}`;
     
     const xpElem = document.getElementById("current-xp");
     if (xpElem) xpElem.innerText = data.xp;
     
     updateXP();
-    checkUnlocks();
   }
 
     // Сон в трейлере, кнопка кресла от HELLWAY

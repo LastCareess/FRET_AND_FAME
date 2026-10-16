@@ -344,7 +344,7 @@ def click():
         else:
             Completed_plot_situations.create(player=player, plot_situation=situation)
             return send_player_data(player, status="plotEvent", extra_data={
-                                        "Text":situation.text
+                                        "text":situation.text
                                     })
 
     if player.time >= 1440:

@@ -1,0 +1,253 @@
+/* ==========================================================================
+   1. ОБЩИЕ И БАЗОВЫЕ СТИЛИ
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Растягиваем страницу на весь экран без прокрутки */
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background-color: #ffffff;
+}
+
+/* Главный контейнер на всю страницу */
+.window-container {
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    grid-template-rows: 70px 1fr; 
+}
+
+/* 2. ВЕРХНЯЯ ПАНЕЛЬ */
+.header {
+    display: grid;
+    grid-template-columns: 1fr 180px; 
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #fafafa;
+}
+
+.header-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 26px;
+    font-weight: 600;
+    color: #1a1a1a;
+    letter-spacing: -0.5px;
+}
+
+.back-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-left: 1px solid #e0e0e0;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    color: #666666;
+    background: none;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    transition: all 0.2s ease;
+}
+
+.back-button:hover {
+    background-color: #f0f0f0;
+    color: #ff3b30; 
+}
+
+/* 3. НИЖНЯЯ ЧАСТЬ */
+.main-content {
+    display: grid;
+    grid-template-columns: 240px 1fr; 
+    height: 100%;
+}
+
+/* Левая колонка (Меню) */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e0e0e0;
+    background-color: #fcfcfc;
+}
+
+/* Правая колонка (Контентная область) */
+.content-area {
+    display: grid;
+    grid-template-rows: 50px 1fr; /* Высота подзаголовка */
+    background-color: #ffffff;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* 4. ЭЛЕМЕНТЫ МЕНЮ И ПОДЗАГОЛОВОК */
+.sidebar-first-item {
+    height: 50px; /* Идеально совпадает по высоте с подзаголовком справа */
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    color: #444444;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.content-subheader {
+    height: 50px;
+    padding-left: 30px;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: #666666;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #ffffff;
+}
+
+.sidebar-item {
+    height: 65px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    color: #444444;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+/* Пустая ячейка меню */
+.sidebar-empty-item {
+    height: 65px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+/* Интерактивные стили для кнопок меню */
+.sidebar-first-item:hover, .sidebar-item:hover {
+    background-color: #f2f2f7;
+    color: #007aff;
+}
+
+.sidebar-first-item.active, .sidebar-item.active {
+    background-color: #e5e5ea;
+    color: #000000;
+    font-weight: 600;
+    border-left: 4px solid #007aff; 
+}
+
+.sidebar-spacer {
+    flex-grow: 1;
+    background-color: #fcfcfc;
+}
+
+/* 5. ОКНО КОНТЕНТА И СТРАНИЦЫ ВКАДОК */
+.content-body {
+    padding: 30px;
+    overflow-y: auto;
+    height: 100%;
+}
+
+/* Скрываем все блоки контента по умолчанию */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease; 
+}
+
+/* Показываем только активный блок контента */
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h2 {
+    font-size: 26px;
+    color: #1a1a1a;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.tab-content .intro-text {
+    font-size: 15px;
+    color: #48484a;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+/* ==========================================================================
+   6. СЕТКА ДЛЯ ВКАДКИ ПОДРАБОТОК И ДИЗАЙН КАРТОЧЕК
+   ========================================================================== */
+/* Контейнер-сетка для карточек */
+.jobs-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); /* Адаптивная ширина колонок */
+    gap: 20px; /* Отступы между карточками */
+    margin-top: 15px;
+}
+
+/* Сама карточка подработки */
+.job-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e5ea;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.job-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Блок для картинки сверху */
+.job-card-image {
+    width: 100%;
+    height: 180px; /* Фиксированная высота картинки */
+    background-color: #f2f2f7;
+    overflow: hidden;
+    position: relative;
+}
+
+.job-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Картинка заполняет область без искажения пропорций */
+}
+
+/* Блок с текстом под картинкой */
+.job-card-info {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.job-card-info h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.job-card-info p {
+    font-size: 14px;
+    color: #666666;
+    line-height: 1.5;
+}
+
+/* Анимация проявления */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+

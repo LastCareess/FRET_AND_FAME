@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерфейс Системы</title>
+    <!-- Подключение внешнего CSS файла -->
+    <link rel="stylesheet" href="../static/css/computer.css">
+</head>
+<body>
+
+    <div class="window-container">
+        
+        <!-- Шапка -->
+        <header class="header">
+            <div class="header-title">Главный Экран</div>
+            <button class="back-button" onclick="window.history.back();">
+                <div>Назад</div>
+            </button>
+        </header>
+
+        <!-- Рабочая зона -->
+        <div class="main-content">
+            
+            <!-- Боковое меню -->
+            <aside class="sidebar">
+                <div class="sidebar-first-item active" data-tab="tab-jobs">Подработки</div>
+                <div class="sidebar-item" data-tab="tab-relations">Отношения</div>
+                <div class="sidebar-item" data-tab="tab-group">Группа</div>
+                <div class="sidebar-empty-item"></div>
+                
+                <div class="sidebar-spacer"></div>
+            </aside>
+
+            <!-- Зона вывода информации -->
+            <main class="content-area">
+                <!-- Подзаголовок, меняется скриптом -->
+                <div class="content-subheader" id="current-header">Подработки</div>
+                
+                <!-- Текстовое поле -->
+                <div class="content-body">
+                    
+                    <!-- ВКЛАДКА 1: Подработки  -->
+                    <div id="tab-jobs" class="tab-content active">
+                        <h2>Доступные заказы</h2>
+                        <p class="intro-text">
+                            Здесь ты можешь заработать свои первые деньги.
+                            Набирайся опыта на простых подработках, чтобы завоевать авторитет и открыть доступ к по-настоящему крупным и прибыльным делам!
+                        </p>
+                        
+                        <!-- Контейнер для сетки карточек -->
+                        <div class="jobs-container">
+                            {%for job in jobs%}
+                            <div class="job-card">
+                                <div class="job-card-image">
+                                    <img src="https://picsum.photos" >
+                                </div>
+                                <div class="job-card-info">
+                                    <h3>{{job.name}}</h3>
+                                    <p>{{job.salary}}$ за клик</p>
+                                    <p>Открывается при достижении {{job.need_xp}} опыта</p>
+                                </div>
+                            </div>
+                            {%endfor%}
+                        </div>
+                    </div>
+
+                    <!-- ВКЛАДКА 2: Отношения -->
+                    <div id="tab-relations" class="tab-content">
+                        <h2>Связи и влияние</h2>
+                        <p class="intro-text">Уровень вашего влияния и доверия среди ключевых персонажей.</p>
+                        {%for relation in relations%}
+                        {{relation.npc_id.name}}
+                        {{relation.relations}}
+                        <br>
+                        {%endfor%}
+                    </div>
+
+                    <!-- ВКЛАДКА 3: Группа -->
+                    <div id="tab-group" class="tab-content">
+                        {%if not band%}
+                        <h2>ТЫ лох, у тебя нет группы</h2>
+                        <p></p>
+                        {%else%}
+                        <h2>{{band.name}}</h2>
+                        {%endif%}
+                    </div>
+
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Логика переключения -->
+    <script>
+        const menuItems = document.querySelectorAll('.sidebar-first-item, .sidebar-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const currentHeader = document.getElementById('current-header');
+
+        menuItems.forEach((item) => {
+            item.addEventListener('click', () => {
+                const targetTabId = item.getAttribute('data-tab');
+                if (!targetTabId) return;
+
+                menuItems.forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(targetTabId).classList.add('active');
+
+                // Синхронизируем подзаголовок с текстом нажатой кнопки
+                currentHeader.textContent = item.textContent;
+            });
+        });
+    </script>
+
+</body>
+</html>
+

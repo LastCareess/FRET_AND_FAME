@@ -233,6 +233,42 @@ body {
     height: 100%;
 }
 
+
+
+
+/* Hellway Нашкодил */
+#plot-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: none;
+}
+
+/* Сама карточка с текстом */
+.plot-situation-modal {
+  background: #222;
+  color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 85%;
+  text-align: center;
+}
+
+/* Твоя кнопка «Понял» */
+.plot-situation-modal button {
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
+}
+
 /* ==========================================================================
    4. ИГРОВАЯ ОБЛАСТЬ (MAIN-CONTENT) И КАРТА
    ========================================================================== */

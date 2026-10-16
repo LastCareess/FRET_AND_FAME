@@ -122,8 +122,15 @@ if (openInvBtn) {
         } else if (data.status==="death"){
           window.location.href = "/death"
         } else if (data.status==="plotEvent"){
-          showEventModal(data) }
-        else {
+          updateUI(data)
+          const plotModal = document.getElementById("plot-modal");
+          const plotText = document.getElementById("plot-situation-text");
+
+          if (plotModal && plotText) {
+            plotText.innerText = data.Text;
+            plotModal.style.display = "flex";
+          }
+        } else {
           // Если просто клик — обновляем всё как обычно
           updateUI(data);
         }
@@ -177,6 +184,7 @@ if (openInvBtn) {
       }
     })
   })
+
   // Показ окна ситуации
   function showEventModal(data) {
     const eventModal = document.getElementById("event-modal");
@@ -309,6 +317,17 @@ if (openInvBtn) {
     }
   };
   window.useItem = useItem;
+
+
+  // HELLWAY нашкодил
+  const closePlotBtn = document.getElementById("close-plot-btn");
+  const plotModal = document.getElementById("plot-modal");
+
+  if (closePlotBtn && plotModal) {
+    closePlotBtn.onclick = () => {
+      plotModal.style.display = "none"; // Прячем окно
+    };
+  }
 });
 
 // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---

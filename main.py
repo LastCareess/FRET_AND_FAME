@@ -332,11 +332,20 @@ def click():
             return event
 
     # Проверка на сюжет 
-    plot_situation = Plot_situations.get_or_none(need_xp = player.xp)
-    if plot_situation:
-        return send_player_data(player, status="plotEvent", extra_data={
-            "Text":plot_situation.text
-        })
+    plot_situations = Plot_situations.select().where(Plot_situations.min_xp <= player.xp)
+    print(f"--- ДЕБАГ СЮЖЕТА ---")
+    print(f"Текущий XP игрока: {player.xp}")
+    print(f"Найдено подходящих сюжетов в БД по XP: {len(plot_situations)}")
+    
+    
+    for situation in plot_situations:
+        if Completed_plot_situations.get_or_none((Completed_plot_situations.plot_situation_id == situation.id) & (Completed_plot_situations.player_id == player.id)):
+            continue
+        else:
+            Completed_plot_situations.create(player=player, plot_situation=situation)
+            return send_player_data(player, status="plotEvent", extra_data={
+                                        "Text":situation.text
+                                    })
 
     if player.time >= 1440:
         player.time = player.time - 1440
@@ -462,6 +471,20 @@ def new_shop():
 def store():
     store_items = Items.select()
     return render_template("store.html",store_items=store_items)
+
+@app.route("/computer")
+def computer():
+    player = Player.get_or_none(Player.login == session.get("login"))
+    avatar = Avatars.get_or_none(Avatars.id == player.avatar)
+    hours = player.time // 60
+    minutes = player.time % 60
+
+    job = Jobs.select()
+    relations = Relations.select().where(Relations.player_id == player.id)
+    band = Band.get_or_none(Band.player_id == player.id)
+
+    return render_template("computer.html", player=player, hours=hours, minutes=minutes, avatar=avatar, jobs=job, relations = relations, band=band)
+
 
 #Новые адреса
 

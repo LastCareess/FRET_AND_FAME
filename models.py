@@ -134,8 +134,15 @@ class Situation_results(BaseModel):
 
 class Plot_situations(BaseModel):
     text = TextField()
-    need_xp = IntegerField()   
-     
+    min_xp = IntegerField()  
+
+
+
+class Completed_plot_situations(BaseModel):
+    player = ForeignKeyField(Player, backref="completed_situations", on_delete="CASCADE")
+    plot_situation = ForeignKeyField(Plot_situations, backref="players", on_delete="CASCADE")
+
+
 class Cooldowns(BaseModel):
     player_id = ForeignKeyField(Player, backref="cooldowns")
     situation_id = ForeignKeyField(Random_situation)
@@ -171,7 +178,7 @@ class Inventory(BaseModel):
 
 
 
-db.create_tables([Avatars,Locations,Player,Npc,Band,Bandmember,Jobs,Random_situation,Situation_results,Cooldowns,Items,Inventory,Relations,Plot_situations])
+db.create_tables([Avatars,Locations,Player,Npc,Band,Bandmember,Jobs,Random_situation,Situation_results,Cooldowns,Items,Inventory,Relations,Plot_situations, Completed_plot_situations])
 
  
 

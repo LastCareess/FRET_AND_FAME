@@ -64,6 +64,7 @@ class Jobs(BaseModel):
     open_from = IntegerField()
     open_to = IntegerField()
     access = BooleanField(default=False)
+    link = CharField()
     
 class Player(BaseModel):
     avatar = ForeignKeyField(Avatars, backref="players")
@@ -151,7 +152,8 @@ class Cooldowns(BaseModel):
 class Relations(BaseModel):
     player_id = ForeignKeyField(Player,backref="relations")
     npc_id = ForeignKeyField(Npc)
-    relations = IntegerField(default=0)      
+    relations = IntegerField(default=0)   
+       
 class Items(BaseModel):
     name = CharField()
     description = CharField()

@@ -189,9 +189,10 @@ def fill_db():
          "time_cost":10,
          "open_from":0,
          "open_to":1440,
-         "access":True
+         "access":True,
+         "link":"get_bottles"
         },
-        {"name":"Играть попсу",
+        {"name":"Концерт в дешевой забегаловке",
          "salary":3,
          "need_xp":1500,
          "need_charisma":20,
@@ -199,9 +200,10 @@ def fill_db():
          "time_cost":30,
          "open_from":480,
          "open_to":1320,
-         "access":False
+         "access":False,
+         "link":"cheap_concert"
         },
-        {"name":"Выступить в местной забегаловке",
+        {"name":"Концерт в баре",
          "salary":20,
          "need_xp":3000,
          "need_charisma":40,
@@ -209,7 +211,8 @@ def fill_db():
          "time_cost":60,
          "open_from":480,
          "open_to":1320,
-         "access":False
+         "access":False,
+         "link":"medium_concert"
         }
     ]
     for data in jobs_data:

@@ -445,6 +445,16 @@ def inside_trailer():
 
     return render_template("inside-trailer.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
 
+# РАБОТА
+@app.route("/job/get_bottles")
+def get_bottles():
+    player = Player.get_or_none(Player.login == session.get("login"))
+    avatar = Avatars.get_or_none(Avatars.id == player.avatar)
+    hours = player.time // 60
+    minutes = player.time % 60
+
+    return render_template("get_bottles.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
+
 
 
 # Страница смерти игрока
@@ -533,8 +543,6 @@ def park():
     minutes = player.time % 60
     return render_template("park.html", player=player, hours=hours, minutes=minutes)
     
-
-
 
 #Подработки
 @app.route("/bottles")

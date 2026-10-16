@@ -51,6 +51,7 @@
                         <!-- Контейнер для сетки карточек -->
                         <div class="jobs-container">
                             {%for job in jobs%}
+                            <a href="/job/{{job.link}}">
                             <div class="job-card">
                                 <div class="job-card-image">
                                     <img src="https://picsum.photos" >
@@ -61,6 +62,7 @@
                                     <p>Открывается при достижении {{job.need_xp}} опыта</p>
                                 </div>
                             </div>
+                            </a>
                             {%endfor%}
                         </div>
                     </div>
@@ -78,9 +80,15 @@
 
                     <!-- ВКЛАДКА 3: Группа -->
                     <div id="tab-group" class="tab-content">
-                        {%if not band%}
-                        <h2>ТЫ лох, у тебя нет группы</h2>
-                        <p></p>
+                        {%if not band and player.xp < 3000 %}
+                        <h3>Недостаточно опыта</h3>
+                        <p>Для основания группы нужно 3000 опыта</p>
+
+                        {%elif not band and player.xp >= 3000 %}
+                        <h3>Основание группы:</h3>
+                        <p>Членство в клубе музыкантов вашего города стоит 5000$ </p>
+                        <button id="get-band">Основать группу</button>
+                        
                         {%else%}
                         <h2>{{band.name}}</h2>
                         {%endif%}

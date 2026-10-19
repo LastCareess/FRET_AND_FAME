@@ -426,6 +426,34 @@ def sleep():
 
 """ОСНОВНЫЕ МАРШРУТЫ И ЛОКАЦИИ"""
 #Новые адреса
+# Победа игрока
+@app.route("/create_band", methods=['POST'])
+def create_band():
+    player = Player.get_or_none(Player.login == session.get("login"))
+    band_name = request.get_json('name')
+    if player and band_name:
+        if player.money >= 5000:
+            band, created = Band.get_or_create(name=band_name, popularity=0, player_id = player.id)
+            if created:
+                player.money -= 5000
+                player.save()
+                return send_player_data(player, status="band_created", )
+            else:
+                return send_player_data(player, status="band_exists")
+        else:
+            return send_player_data(player, status="not_enough_money")
+
+@app.route("/band") 
+def band():
+    player = Player.get_or_none(Player.login == session.get("login"))
+    avatar = Avatars.get_or_none(Avatars.id == player.avatar)
+    band = Band.get_or_none(Band.player_id == player.id)
+    hours = player.time // 60
+    minutes = player.time % 60
+
+    return render_template("band.html", player=player, hours=hours, minutes=minutes, avatar=avatar, band=band)         
+
+
 # Тестовая ветка хедер-мейн
 @app.route("/main")
 def main():

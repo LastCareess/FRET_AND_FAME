@@ -183,25 +183,6 @@ if (openInvBtn) {
       }
     })
   })
-    // Основание группы от HELLWAY
-  
-  const getBandBtn = document.getElementById("get-band")
-
-  if (getBandBtn) {
-    getBandBtn.addEventListener("click", (e) => {
-    // Очень дырявая функция которая выводит быстро деньги из кошелька, в будущем СТРОГО ЗАМЕНИТЬ!
-    const moneyElem = document.querySelector(".money-label");
-    const currentMoney = parseInt(moneyElem.innerText.replace(/\D/g, "")) || 0;
-    if(currentMoney >= 5000){
-      alert("Вы победили! окончание демо-версии!")
-    } else {
-      alert("Денег недостаточно! накопите 5000$")
-    }
-  })
-  }
-  
-
-
 
 
   // Показ окна ситуации

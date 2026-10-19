@@ -13,7 +13,10 @@
         
         <!-- Шапка -->
         <header class="header">
-            <div class="header-title">Главный Экран</div>
+            <div class="header-title">
+                <p>Главный Экран </p>
+                <p id="balance">Баланс: {{player.money}}</p>
+            </div>
             <button class="back-button" onclick="window.history.back();">
                 <div>Назад</div>
             </button>
@@ -87,6 +90,7 @@
                         {%elif not band and player.xp >= 3000 %}
                         <h3>Основание группы:</h3>
                         <p>Членство в клубе музыкантов вашего города стоит 5000$ </p>
+                        <input required id="band-name" placeholder="Введите название группы">
                         <button id="get-band">Основать группу</button>
                         
                         {%else%}
@@ -121,6 +125,90 @@
                 currentHeader.textContent = item.textContent;
             });
         });
+
+
+
+        // Основание группы от HELLWAY
+  
+        const getBandBtn = document.getElementById("get-band")
+        const bandName = document.getElementById("band-name")
+
+        if (getBandBtn) {
+            getBandBtn.addEventListener("click", (e) => {
+            
+            // Валидация на название группы
+            const validateBandName = bandName ? bandName.value.trim() : ""
+
+            if (!validateBandName){
+                alert("Введите название группы")
+                return
+            }
+
+            // Блокировка интерфейса от спам кликов
+            getBandBtn.disabled = true;
+            getBandBtn.textContent = "Создание группы...";
+
+            // Fetch в Бэкенд
+            
+            fetch("/create_band", {
+                // Метод
+                method: "POST",
+
+                // Указание на содержание запроса
+                headers : {
+                    "Content-Type" : "application/json"
+                },
+
+                // Тело запроса
+                body: JSON.stringify({
+                    name:validateBandName
+                })
+
+            })
+            .then(response => {
+                // Перевод ответа в js обьект
+                return response.json()
+            })
+
+            .then(serverData => {
+                // Разблокировка кнопки создания группы
+                getBandBtn.disabled = false;
+                getBandBtn.textContent = "Основать группу";
+
+                if (serverData.status === "band_created") {
+                    alert("Группа успешно основана! поздравляем с прохождением демо-версии")
+                    window.location.href = ('/band')
+                } else if (serverData.status  === "band_exists") {
+                    alert("Ваша группа в недоумении, зачем вы создаете новую?")
+                } else if (serverData.status === "not_enough_money") {
+                    alert("Кажется, на ваше счете недостаточно средств, заработайте еще!")
+                } else {
+                    alert("Неизвестная ошибка")
+                }
+            }) 
+
+            .catch(error => {
+                getBandBtn.disabled = false
+                getBandBtn.textContent = "Основать группу"
+
+                console.error("Критическая ошибка сервера, код ошибки: ", error)
+                alert("Не удалось связаться с сервером, попробуте еще")
+            })
+
+
+            const moneyElem = document.getElementById("balance");
+            const currentMoney = parseInt(moneyElem.innerText.replace(/\D/g, "")) || 0;
+            if(currentMoney >= 5000){
+            alert("Вы победили! окончание демо-версии!")
+            } else {
+            alert("Денег недостаточно! накопите 5000$")
+            }
+        })
+        }
+
+
+
+
     </script>
 
 </body>

@@ -480,10 +480,20 @@ def get_bottles():
     avatar = Avatars.get_or_none(Avatars.id == player.avatar)
     hours = player.time // 60
     minutes = player.time % 60
+    player.job_id = 1  # Исправлено: _id в конце
+    player.save()
 
-    return render_template("get_bottles.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
 
+    return render_template("get-bottles.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
 
+@app.route("/job/medium_concert")
+def bar():
+    player = Player.get_or_none(Player.login == session.get("login"))
+    avatar = Avatars.get_or_none(Avatars.id == player.avatar)
+    hours = player.time // 60
+    minutes = player.time % 60
+
+    return render_template("bar.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
 
 # Страница смерти игрока
 @app.route("/death")

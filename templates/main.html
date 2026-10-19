@@ -71,13 +71,51 @@
                 </a>
             </div>
         </div>
-        
+
+        <div class="inventory-block" id="inventory-trigger">
+            <div class="inventory-placeholder">
+                <img src="../static/img/inventory-icon.jpg" alt="инвентарь">
+            </div>
+        </div>
         <!-- Hellway нашкодил -->
         <div id="plot-modal">
             <div class="plot-situation-modal">
                 <h3>Обучение</h3>
                 <p id="plot-situation-text"></p>
                 <button id="close-plot-btn">Понял</button>
+            </div>
+        </div>
+
+
+        <!-- jorik67 -->
+        <div class="inventory-popup hidden" id="inventory-window">
+            <div class="inventory-popup-header">
+                <span>Рюкзак</span>
+                <button class="close-inventory-btn" id="inventory-close">×</button>
+            </div>
+            
+            <!-- Сетка для предметов -->
+            <div class="inventory-grid">
+                <div class="inventory-slot">
+                    <!--Инвентарь изз джавы-->
+                </div>
+                
+            </div>
+        </div>
+
+
+        <!--     ----------           -----СКРЫТОЕ ОКНО ИВЕНТОВ-----       ---------------    -->
+
+        <div id="event-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <!-- Название события (подгружается из базы) -->
+                <h2 id="event-name">СОБЫТИЕ</h2>
+                
+                <!-- Описание игровой ситуации (подгружается из базы) -->
+                <p id="event-desc">Описание ситуации...</p>
+                
+                <!-- Сюда JS будет динамически добавлять кнопки вариантов ответа (.choice-btn) -->
+                <div id="event-choices"></div>
             </div>
         </div>
 

@@ -25,6 +25,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const backShopBtn = document.getElementById("back-from-shop");
   const backJobBtn = document.getElementById("back-from-job"); // Добавили кнопку назад
 
+
+  // Элементы НОВОГО РЮКЗАКА ИЗ ХЕДЕРА by Jorik67
+  const headerInvBtn = document.getElementById('inventory-trigger');
+  const headerInvWindow = document.getElementById('inventory-window');
+  const headerInvClose = document.getElementById('inventory-close');
+
+
   // 2. Инициализация (запуск функций ПРИ ЗАГРУЗКЕ)
   const startHP = parseInt(document.querySelector(".hp span").innerText);
   const startEn = parseInt(document.querySelector(".energy span").innerText);
@@ -39,57 +46,96 @@ document.addEventListener("DOMContentLoaded", function () {
   checkUnlocks();
 
 
-    window.loadInventory = async function() { 
-    const container = document.getElementById("items-container");
-    if (!container) return; // Страховка, если элемента нет на странице
+  // ==========================================================================
+  // ЛОГИКА НОВОГО РЮКЗАКА (ХЕДЕР) by jorik67
+  // ==========================================================================
+  if (headerInvBtn && headerInvWindow && headerInvClose) {
+    // Открытие рюкзака по клику на блок слева
+    headerInvBtn.addEventListener('click', () => {
+      headerInvWindow.classList.remove('hidden');
+      loadHeaderInventory(); // Загружаем предметы в сетку хедера
+    });
 
-    container.innerHTML = "Загрузка..."; // Показываем текст, пока ждем ответ
+    // Закрытие на крестик
+    headerInvClose.addEventListener('click', () => {
+      headerInvWindow.classList.add('hidden');
+    });
+
+    // Закрытие по нажатию на клавишу Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        headerInvWindow.classList.add('hidden');
+      }
+    });
+  }
+
+  // Функция для динамической отрисовки предметов в новой сетке рюкзака
+  async function loadHeaderInventory() {
+    const grid = document.querySelector(".inventory-grid");
+    if (!grid) return;
+
+    grid.innerHTML = "<div style='grid-column: span 4; text-align: center; font-size: 14px;'>Загрузка...</div>";
 
     try {
       const response = await fetch('/get_inventory');
       const items = await response.json();
+      grid.innerHTML = ""; // Очищаем текст загрузки
 
-      container.innerHTML = ""; // Очищаем текст загрузки
-
+      // ПРОВЕРКА: Если инвентарь пуст
       if (items.length === 0) {
-        container.innerHTML = "<p style='text-align:center; padding:10px;'>В инвентаре пусто</p>";
+        grid.innerHTML = "<div style='grid-column: span 4; text-align: center; font-size: 16px; color: #aaa;'>Рюкзак пуст</div>";
         return;
       }
 
-      items.forEach(item => {
-          const itemDiv = document.createElement("div");
-          itemDiv.className = "inventory-item";
-          
-          // 1. Проверяем статус экипировки (из JSON, который прислал Flask)
-          const isEquipped = item.is_equipped; 
-          const btnText = isEquipped ? "Снять" : "Использовать";
-          const btnColor = isEquipped ? "#e74c3c" : "#2ecc71"; // Красный для снятия, зеленый для использования
+      // ТЕПЕРЬ ОТРЕСОВЫВАЕМ ВСЕ ПРЕДМЕТЫ ИЗ МАССИВА, А НЕ ТОЛЬКО ПЕРВЫЕ 8
+      items.forEach((item) => {
+        if (!item) return; // Защита от пустых объектов
+        
+        const slot = document.createElement("div");
+        slot.className = "inventory-slot";
+        const isEquipped = item.is_equipped;
 
-          itemDiv.innerHTML = `
-              <div class="item-info" style="border-bottom: 1px solid #444; padding: 10px; margin-bottom: 5px;">
-                  <strong>${item.name}</strong> ${isEquipped ? '<span style="color:#f1c40f;">[Надето]</span>' : `(x${item.quantity})`}
-                  <p style="font-size: 0.8em; color: #ccc; margin: 5px 0;">${item.description}</p>
-                  <button onclick="useItem(${item.id})" class="btn-use" 
-                          style="background: ${btnColor}; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px;">
-                      ${btnText}
-                  </button>
-              </div>
-          `;
-          container.appendChild(itemDiv);
+        // Наполняем слот: картинка + счетчик предметов
+        slot.innerHTML = `
+          <img src="../static/img/items/${item.image || 'default.png'}" alt="${item.name}">
+          <span class="slot-count">x${item.quantity}</span>
+        `;
+        
+        slot.style.cursor = "pointer";
+        // Всплывающая подсказка при наведении мышки на ячейку
+        slot.title = `${item.name}: ${item.description} ${isEquipped ? '[Надето]' : ''}`;
+        
+        // При клике по ячейке используем вещь
+        slot.onclick = async () => {
+          await window.useItem(item.id);
+          loadHeaderInventory(); // Мгновенно обновляем сетку рюкзака после использования
+        };
+
+        grid.appendChild(slot);
       });
+
     } catch (error) {
-      console.error("Ошибка загрузки инвентаря:", error);
-      container.innerHTML = "Ошибка связи с сервером";
+      console.error("Ошибка обновления рюкзака:", error);
+      grid.innerHTML = "<div style='grid-column: span 4; text-align: center; color: red;'>Ошибка</div>";
     }
   }
-// КНОПКИ ПЕРЕКЛЮЧЕНИЯ
-if (openInvBtn) {
+
+
+
+// ==========================================================================
+// КНОПКИ ПЕРЕКЛЮЧЕНИЯ И ДЕЙСТВИЯ СТРАНИЦЫ
+// ==========================================================================
+  
+  // Старая кнопка телефона теперь просто может открывать рюкзак в шапке для подстраховки
+  if (openInvBtn) {
     openInvBtn.onclick = () => {
-        console.log("Инвентарь открывается...");
-        switchScreen(invMenu); 
-        loadInventory();
+      console.log("Инвентарь открывается в шапке...");
+      if (headerInvWindow) headerInvWindow.classList.remove('hidden');
+      loadHeaderInventory();
+      modal.style.display = "none"; // Закрываем телефон, чтобы не мешал
     };
-}
+  }
+
   if (openShopBtn) {
     openShopBtn.onclick = () => {
       console.log("Открываем магазин...");
@@ -169,21 +215,22 @@ if (openInvBtn) {
     // Сон в трейлере, кнопка кресла от HELLWAY
   const sleepBtn = document.getElementById("sleep")
 
-  sleepBtn.addEventListener('click', function(e){
-    e.preventDefault()
+  if(sleepBtn){
+    sleepBtn.addEventListener('click', function(e){
+      e.preventDefault()
 
-    fetch('/sleep')
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === "success") {
-        updateUI(data)
-        alert("Отлично поспал)")
-      } else {
-        alert("Поспать не получилось")
-      }
+      fetch('/sleep')
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          updateUI(data)
+          alert("Отлично поспал)")
+        } else {
+          alert("Поспать не получилось")
+        }
+      })
     })
-  })
-
+  }
 
   // Показ окна ситуации
   function showEventModal(data) {

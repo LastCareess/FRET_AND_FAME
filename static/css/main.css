@@ -234,6 +234,109 @@ body {
 }
 
 
+/* by jorik67 */
+/* Кнопка инвентаря слева */
+.inventory-block {
+    position: absolute;
+    bottom: 20px; 
+    left: 20px;   
+    width: 250px; 
+    height: 180px; 
+    border: 3px solid #000000;
+    background-color: rgba(0, 0, 0, 0.7); 
+    z-index: 10;
+    cursor: pointer;
+}
+.inventory-block img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Окно инвентаря по центру */
+.inventory-popup {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;               /* Немного увеличили ширину для вместительности */
+    max-width: 95vw;            /* Защита для мобильных экранов/узких окон */
+    background: rgba(18, 18, 18, 0.95);
+    border: 3px solid #000000;
+    padding: 15px;
+    z-index: 100;
+    box-sizing: border-box; 
+}
+.inventory-popup-header {
+    display: flex; justify-content: space-between;
+    font-size: 20px; color: #00ffcc; margin-bottom: 15px;
+}
+.close-inventory-btn { background: none; border: none; color: #ff0055; font-size: 26px; cursor: pointer; }
+
+/* Горизонтальная лента предметов с прокруткой */
+.inventory-grid { 
+    display: grid;
+    grid-template-rows: repeat(2, 90px);
+    /* Заменяем фиксированный auto-columns на автоматическое добавление колонок */
+    grid-auto-columns: mincontent; 
+    grid-auto-flow: column;   
+    gap: 12px;                
+    width: 100%;
+    overflow-x: auto;         /* Полоса прокрутки появится автоматически при выходе за границы */
+    overflow-y: hidden;       
+    padding-bottom: 12px;     
+    box-sizing: border-box;
+}
+
+/* Игровая карточка предмета (увеличена ширина, чтобы влезал текст) */
+.inventory-slot {
+    flex: 0 0 145px;          /* Фиксируем ширину на 145px, чтобы карточки не сжимались */
+    width: 145px; 
+    height: 90px;             /* Задаем фиксированную высоту прямоугольника */
+    background: rgba(0, 0, 0, 0.6); 
+    border: 2px solid #333333;
+    position: relative; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    padding: 8px;             /* Внутренние отступы, чтобы текст не прижимался к краям */
+    box-sizing: border-box;
+}
+
+/* Настройка отображения битой картинки и длинного текста */
+.inventory-slot img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: contain; 
+    font-size: 13px;          /* Оптимальный размер шрифта для длинных имен */
+    color: #ffffff;           /* Белый цвет текста */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: normal;      /* Разрешаем тексту переноситься на новые строки */
+    font-family: "Underdog", serif; /* Твой красивый игровой шрифт */
+}
+
+.slot-count { 
+    position: absolute; 
+    bottom: 4px; 
+    right: 6px; 
+    font-size: 12px; 
+    color: #00ffcc;           /* Сделали бирюзовым для лучшей видимости */
+    font-weight: bold; 
+}
+
+/* Кастомизация горизонтальной полосы прокрутки */
+.inventory-grid::-webkit-scrollbar {
+    height: 6px;              /* Задаем высоту для горизонтального ползунка */
+}
+.inventory-grid::-webkit-scrollbar-track {
+    background: #121212;
+    border-radius: 3px;
+}
+.inventory-grid::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 3px;
+}
+.inventory-grid::-webkit-scrollbar-thumb:hover {
+    background: #00ffcc;     /* Бирюзовая подсветка при наведении */
+}
 
 
 /* Hellway Нашкодил */
@@ -510,6 +613,162 @@ body {
     display: none !important;
 }
 
+
+/* ==========================================================================
+    МЕТРО
+   ========================================================================== */
+.main-metro {
+    width: 100%;
+    min-height: calc(100vh - 180px);
+    border: 3px solid #000000;
+    border-top: none; 
+    position: relative; 
+
+    /* ФОН ИГРОВОЙ ЗОНЫ ТРЕЙЛЕРОВ: */
+    background-image: url('../img/location-img/background_subway.png'); 
+    background-size: cover;          
+    background-position: center;      
+    background-repeat: no-repeat;     
+}
+
+/* ==========================================================================
+    БАР
+   ========================================================================== */
+.main-bar {
+    width: 100%;
+    min-height: calc(100vh - 180px);
+    border: 3px solid #000000;
+    border-top: none; 
+    position: relative; 
+
+    /* ФОН ИГРОВОЙ ЗОНЫ ТРЕЙЛЕРОВ: */
+    background-image: url('../img/location-img/bk-bar.jpg'); 
+    background-size: cover;          
+    background-position: center;      
+    background-repeat: no-repeat;     
+}
+
+/* ==========================================================================
+    ПАРК
+   ========================================================================== */
+.main-park {
+    width: 100%;
+    min-height: calc(100vh - 180px);
+    border: 3px solid #000000;
+    border-top: none; 
+    position: relative; 
+
+    /* ФОН ИГРОВОЙ ЗОНЫ ТРЕЙЛЕРОВ: */
+    background-image: url('../img/location-img/background_park_day.jpg'); 
+    background-size: cover;          
+    background-position: center;      
+    background-repeat: no-repeat;     
+}
+
+
+
+/* ==========================================================================
+    СБОР БУТЫЛОК
+   ========================================================================== */
+.main-bottles {
+    width: 100%;
+    min-height: calc(100vh - 180px);
+    border: 3px solid #000000;
+    border-top: none; 
+    position: relative; 
+
+    /* ФОН ИГРОВОЙ ЗОНЫ ТРЕЙЛЕРОВ: */
+    background-image: url('../img/location-img/background_underworking_bottleCollection_day.jpg'); 
+    background-size: cover;          
+    background-position: center;      
+    background-repeat: no-repeat;     
+}
+
+
+
+/* ==========================================================================
+    СКРЫТОЕ ОКНО ИВЕНТОВ
+   ========================================================================== */
+
+/* Общая затемняющая подложка на весь экран */
+.modal-overlay {
+    display: none; /* Управляется через JS (flex) */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px); /* Легкое размытие заднего плана */
+    z-index: 2000; /* Поверх всех элементов интерфейса */
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* Контентная карточка ситуации */
+.modal-content {
+    background: rgba(18, 18, 18, 0.95);
+    border: 3px solid #000000;
+    padding: 25px;
+    width: 450px;
+    max-width: 90vw;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    overflow-y: auto;
+}
+
+/* Заголовок события */
+#event-name {
+    font-family: "Underdog", serif;
+    font-size: 24px;
+    color: #00ffcc; /* Бирюзовый цвет в стиле HUD */
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 2px #000000;
+}
+
+/* Описание игровой ситуации */
+#event-desc {
+    font-size: 18px;
+    color: #ffffff;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 1px #000000;
+}
+
+/* Контейнер для кнопок выбора */
+#event-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+/* Кнопки выбора действий внутри ивента */
+.choice-btn {
+    width: 100%;
+    padding: 12px 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 2px solid #aaaaaa;
+    color: #ffffff;
+    font-family: "Underdog", serif;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Эффект наведения на кнопку выбора */
+.choice-btn:hover {
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: #000000; /* Инверсия цвета при наведении */
+}
 
 
 

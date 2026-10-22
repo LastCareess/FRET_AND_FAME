@@ -254,8 +254,8 @@ body {
     position: fixed;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 500px;               /* Немного увеличили ширину для вместительности */
-    max-width: 95vw;            /* Защита для мобильных экранов/узких окон */
+    width: 500px;              
+    max-width: 95vw;           
     background: rgba(18, 18, 18, 0.95);
     border: 3px solid #000000;
     padding: 15px;
@@ -272,45 +272,84 @@ body {
 .inventory-grid { 
     display: grid;
     grid-template-rows: repeat(2, 90px);
-    /* Заменяем фиксированный auto-columns на автоматическое добавление колонок */
     grid-auto-columns: mincontent; 
     grid-auto-flow: column;   
     gap: 12px;                
     width: 100%;
-    overflow-x: auto;         /* Полоса прокрутки появится автоматически при выходе за границы */
+    overflow-x: auto;       
     overflow-y: hidden;       
     padding-bottom: 12px;     
     box-sizing: border-box;
 }
 
-/* Игровая карточка предмета (увеличена ширина, чтобы влезал текст) */
+/* Переопределяем ячейку инвентаря под вывод текстовых характеристик из БД */
 .inventory-slot {
-    flex: 0 0 145px;          /* Фиксируем ширину на 145px, чтобы карточки не сжимались */
-    width: 145px; 
-    height: 90px;             /* Задаем фиксированную высоту прямоугольника */
+    flex: 0 0 170px !important; /* Делаем ячейку шире, чтобы текст влезал */
+    width: 170px !important;
+    height: 100px !important;
     background: rgba(0, 0, 0, 0.6); 
     border: 2px solid #333333;
     position: relative; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center;
-    padding: 8px;             /* Внутренние отступы, чтобы текст не прижимался к краям */
+    display: flex;
+    flex-direction: column; /* Элементы выстраиваются сверху вниз */
+    justify-content: flex-start;
+    align-items: flex-start; /* Выравниваем текст по левому краю */
+    padding: 8px 10px;             
     box-sizing: border-box;
+    border-radius: 4px;
+    transition: border-color 0.2s ease;
 }
 
-/* Настройка отображения битой картинки и длинного текста */
-.inventory-slot img { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: contain; 
-    font-size: 13px;          /* Оптимальный размер шрифта для длинных имен */
-    color: #ffffff;           /* Белый цвет текста */
-    text-align: center;
+/* Контейнер для текста */
+.slot-main-info {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    white-space: normal;      /* Разрешаем тексту переноситься на новые строки */
-    font-family: "Underdog", serif; /* Твой красивый игровой шрифт */
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+/* Название предмета с уменьшенным шрифтом */
+.item-title {
+    font-family: "Underdog", serif;
+    font-size: 14px; /* Уменьшаем базовый шрифт 30px, чтобы влезал */
+    color: #ffffff;
+    line-height: 1.2;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Если имя слишком длинное, оно красиво сократится */
+}
+
+/* Блок отображения характеристик из базы данных */
+.item-db-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-family: Arial, sans-serif; /* Для мелких бонусов лучше использовать простой шрифт */
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Цветовая кодировка бонусов */
+.stat.xp { color: #bb86fc; }        
+.stat.charisma { color: #00ffcc; }  
+.stat.satiety { color: #2e7d32; }   
+.stat.hydration { color: #0d47a1; } 
+.stat.energy { color: #f57f17; }   
+.stat.hp { color: #b71c1c; }       
+
+/* Тэг "Надето" в углу карточки */
+.equipped-tag {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+    color: #00ff66;
+    background: rgba(0, 255, 102, 0.15);
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px solid #00ff66;
 }
 
 .slot-count { 
@@ -318,13 +357,13 @@ body {
     bottom: 4px; 
     right: 6px; 
     font-size: 12px; 
-    color: #00ffcc;           /* Сделали бирюзовым для лучшей видимости */
+    color: #00ffcc;          
     font-weight: bold; 
 }
 
 /* Кастомизация горизонтальной полосы прокрутки */
 .inventory-grid::-webkit-scrollbar {
-    height: 6px;              /* Задаем высоту для горизонтального ползунка */
+    height: 6px;              
 }
 .inventory-grid::-webkit-scrollbar-track {
     background: #121212;
@@ -335,7 +374,7 @@ body {
     border-radius: 3px;
 }
 .inventory-grid::-webkit-scrollbar-thumb:hover {
-    background: #00ffcc;     /* Бирюзовая подсветка при наведении */
+    background: #00ffcc;     
 }
 
 

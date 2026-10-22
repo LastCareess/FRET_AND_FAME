@@ -5,18 +5,21 @@ from peewee import fn
 
 app = Flask("myapp")
 app.secret_key = 'Poawlh9aw1982;lawfi'
-"""
-Сделаны дизайны карты и подключены к бэку
-В базе сделаны аватарки и их пути
 
 """
+Переделать базу
 
 
 
+player.save() в использовании предмета
 
-"""
+player.job и player.location в переходе между локациями
+
+
+
 Идеи для улучшения кода:
-1.Вынос в отдельную функцию кода для возврата json-а
+
+
 2.Разделение обязанностей в функции использования предметов
 3.Вынос функции обновления стат игрока на бэкенде в модель таблицы
 
@@ -107,6 +110,33 @@ def random_event(player):
         "choice": [situation.choice_name1, situation.choice_name2, situation.choice_name3]
     })  
     return None  
+
+"""Обработка доступа"""
+
+def has_location_access(player, location):
+    # Проверка опыта
+    if player.xp < location.needxp:
+        return False
+    
+    
+    if not (location.open_from <= player.time <= location.open_to):
+        return False
+        
+    return True
+
+# костыль
+def has_job_access(player, location):
+    # Проверка опыта
+    if player.xp < location.need_xp:
+        return False
+    
+    
+    if not (location.open_from <= player.time <= location.open_to):
+        return False
+        
+    return True
+
+
 
 """API"""
 
@@ -207,6 +237,7 @@ def use_item():
                 player.xp_bonus -= item_stats.xpbonus - 1
                 item.is_equipped = False
                 item.save()
+                player.save()
                 return send_player_data(player, "unequipped")
             # Если слот занят другой шмоткой такого же типа то сервер не даст надеть его
             already_equipped = (Inventory.select().join(Items).where(Inventory.player_id == player.id, Inventory.is_equipped == True, Items.item_type == item_stats.item_type).first())
@@ -240,7 +271,13 @@ def get_inventory():
             "quantity": row.quantity,
             "description": row.item_id.description,
             "hp_bonus": row.item_id.influence_on_hp,
-            "is_equipped":row.is_equipped
+            "is_equipped":row.is_equipped,
+            "xpbonus": row.item_id.xpbonus,
+            "charismabonus": row.item_id.charismabonus,
+            "restore_satiety": row.item_id.restore_satiety,
+            "restore_hydration": row.item_id.restore_hydration,
+            "energy_change": row.item_id.energy_change,
+            "hp_bonus": row.item_id.influence_on_hp
         })
     return jsonify(items_list)
 
@@ -309,6 +346,7 @@ def click():
     player.satiety = max(0,player.satiety -1)
     player.hydration = max(0,player.hydration -2)
 
+
     
     if not player.job: 
         player.time += 10
@@ -331,12 +369,13 @@ def click():
             player.save() 
             return event
 
+    
+    
+        
+
+
     # Проверка на сюжет 
     plot_situations = Plot_situations.select().where(Plot_situations.min_xp <= player.xp)
-    print(f"--- ДЕБАГ СЮЖЕТА ---")
-    print(f"Текущий XP игрока: {player.xp}")
-    print(f"Найдено подходящих сюжетов в БД по XP: {len(plot_situations)}")
-    
     
     for situation in plot_situations:
         if Completed_plot_situations.get_or_none((Completed_plot_situations.plot_situation_id == situation.id) & (Completed_plot_situations.player_id == player.id)):
@@ -351,8 +390,6 @@ def click():
         player.time = player.time - 1440
         player.days += 1
 
-
-    
     player.save()   
 
     return send_player_data(player, "success")
@@ -462,6 +499,10 @@ def main():
     hours = player.time // 60
     minutes = player.time % 60
 
+    player.job = None
+    player.location = 1
+    player.save()
+
     return render_template("main.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
 
 @app.route("/inside_trailer")
@@ -470,6 +511,10 @@ def inside_trailer():
     avatar = Avatars.get_or_none(Avatars.id == player.avatar)
     hours = player.time // 60
     minutes = player.time % 60
+
+    player.job = None
+    player.location = 1
+    player.save()
 
     return render_template("inside-trailer.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
 
@@ -480,20 +525,44 @@ def get_bottles():
     avatar = Avatars.get_or_none(Avatars.id == player.avatar)
     hours = player.time // 60
     minutes = player.time % 60
-    player.job_id = 1  # Исправлено: _id в конце
-    player.save()
+
+    job = Jobs.get_or_none(Jobs.id == 1) 
+    location = Locations(Locations.id == 1)
+    
+    player.location = location
+    player.job = job
+    
+
+    if has_job_access(player, job):
+        player.save()
+        return render_template("get-bottles.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
+        
+    else:
+        return redirect("/main")
+
+    
 
 
-    return render_template("get-bottles.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
+    
 
-@app.route("/job/medium_concert")
-def bar():
+@app.route("/job/cheap_concert")
+def cheap_bar():
     player = Player.get_or_none(Player.login == session.get("login"))
     avatar = Avatars.get_or_none(Avatars.id == player.avatar)
     hours = player.time // 60
     minutes = player.time % 60
 
-    return render_template("bar.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
+    job = Jobs.get_or_none(Jobs.id == 2) 
+    
+        
+    player.location = None
+    player.job = job
+
+    if has_job_access(player, job):
+            player.save()
+            return render_template("get-bottles.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
+    else:
+            return redirect("/main")
 
 # Страница смерти игрока
 @app.route("/death")
@@ -533,98 +602,57 @@ def computer():
 
     return render_template("computer.html", player=player, hours=hours, minutes=minutes, avatar=avatar, jobs=job, relations = relations, band=band)
 
+# Основные локации
 
-#Новые адреса
+# Метро
+@app.route("/metro")
+def metro():
+    player = Player.get_or_none(Player.login == session.get("login"))
+    avatar = Avatars.get_or_none(Avatars.id == player.avatar)
+    hours = player.time // 60
+    minutes = player.time % 60
 
-#Трейлер 
-@app.route("/trailer")
-def trailer():
+    location = Locations.get_or_none(Locations.name == "Переход")
 
-    if session.get("is_auth") != True:
-        return redirect("/")
-    
-    player = Player.get_or_none(login=session["login"])
-    player.location=1
     player.job = None
-    player.save()
+    player.location = location
 
+    if has_location_access(player, location):
+
+        player.save()
+        return render_template("metro.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
+
+    else:
+        return redirect("/main")
+
+
+    
+
+    
+
+# Парк
+@app.route("/new_park")
+def new_park():
+    player = Player.get_or_none(Player.login == session.get("login"))
+    avatar = Avatars.get_or_none(Avatars.id == player.avatar)
     hours = player.time // 60
     minutes = player.time % 60
-    return render_template("trailer.html", player=player, hours=hours, minutes=minutes)
 
-@app.route("/tunnel")
-def tunnel():
-    if session.get("is_auth") != True:
-        return redirect("/")
+
+    location = Locations.get_or_none(Locations.name == "Парк")
     
-    
-    player = Player.get_or_none(login=session["login"])
-    player.location=2
     player.job = None
-    player.save()
+    player.location = location
 
-    hours = player.time // 60
-    minutes = player.time % 60
-    return render_template("tunnel.html", player=player, hours=hours, minutes=minutes)
-    
-@app.route("/park")
-def park():
-    if session.get("is_auth") != True:
-        return redirect("/")
-    
-    player = Player.get_or_none(login=session["login"])
-    player.location=3
-    player.job = None
-    player.save()
+    if has_location_access(player, location):
+        player.save()
 
-    hours = player.time // 60
-    minutes = player.time % 60
-    return render_template("park.html", player=player, hours=hours, minutes=minutes)
-    
+        return render_template("newpark.html", player=player, hours=hours, minutes=minutes, avatar=avatar)
 
-#Подработки
-@app.route("/bottles")
-def bottles():
-    if session.get("is_auth") != True:
-        return redirect("/")
-    
-    
-    player = Player.get_or_none(login=session["login"])
-    player.job = 1
-    player.location = 1
-    player.save()
+    else:
+        return redirect("/main")
 
-    hours = player.time // 60
-    minutes = player.time % 60
-    return render_template("job1.html", player=player, hours=hours, minutes=minutes)
 
-@app.route("/play_popular")
-def play_popular():
-    if session.get("is_auth") != True:
-        return redirect("/")
-    
-    player = Player.get_or_none(login=session["login"])
-    player.job = 2
-    player.location = 2
-    player.save()
-
-    hours = player.time // 60
-    minutes = player.time % 60
-    return render_template("job2.html", player=player, hours=hours, minutes=minutes)
-
-@app.route("/small_concert")
-def small_concert():
-    if session.get("is_auth") != True:
-        return redirect("/")
-    
-    player = Player.get_or_none(login=session["login"])
-    player.job = 3
-    player.location = 3
-    player.save()
-
-    hours = player.time // 60
-    minutes = player.time % 60
-    return render_template("job3.html", player=player, hours=hours, minutes=minutes)
 
 
 
@@ -668,7 +696,7 @@ def register():
                 session["login"] = login
                 session["location"] = 1
 
-                return redirect("/trailer")
+                return redirect("/main")
         else:
             return "Ошибка"
     
@@ -689,7 +717,7 @@ def auth():
             session["is_auth"] = True
             session["login"] = login
             session["location"] = 1
-            return redirect("/trailer")
+            return redirect("/main")
         
         else:
             return "Ошибка"

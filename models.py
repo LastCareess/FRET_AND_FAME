@@ -47,7 +47,6 @@ class Avatars(BaseModel):
 
 class Locations(BaseModel):
     name = CharField()
-    access = BooleanField(default=False)
     needxp = IntegerField()
     needcharisma = IntegerField()
     open_from = IntegerField()
@@ -63,7 +62,6 @@ class Jobs(BaseModel):
     energy_cost = IntegerField()
     open_from = IntegerField()
     open_to = IntegerField()
-    access = BooleanField(default=False)
     link = CharField()
     
 class Player(BaseModel):
@@ -82,7 +80,7 @@ class Player(BaseModel):
     xp_bonus = FloatField(default=1)
     age = IntegerField()
     name = CharField()
-    location = ForeignKeyField(Locations, backref="players")
+    location = ForeignKeyField(Locations, backref="players", null = True)
     job = ForeignKeyField(Jobs, backref="players", null=True)
     satiety = IntegerField(default=100)
     max_satiety = IntegerField(default=100)
@@ -90,6 +88,9 @@ class Player(BaseModel):
     max_hydration = IntegerField(default=100)
     time = IntegerField(default=0)
     days = IntegerField(default=0)
+
+
+
 
 class Npc(BaseModel):
     name = CharField()

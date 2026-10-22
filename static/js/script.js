@@ -50,6 +50,16 @@ document.addEventListener("DOMContentLoaded", function () {
   // ЛОГИКА НОВОГО РЮКЗАКА (ХЕДЕР) by jorik67
   // ==========================================================================
   if (headerInvBtn && headerInvWindow && headerInvClose) {
+
+    // Разрешаем браузеру прокручивать скрол горизонтально на колёсико мыши
+    const grid = document.querySelector(".inventory-grid");
+        if (grid) {
+          grid.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            grid.scrollLeft += e.deltaY;
+          }, { passive: false });
+        }
+
     // Открытие рюкзака по клику на блок слева
     headerInvBtn.addEventListener('click', () => {
       headerInvWindow.classList.remove('hidden');
@@ -69,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Функция для динамической отрисовки предметов в новой сетке рюкзака
+   // Функция для динамической отрисовки предметов в новой сетке рюкзака
   async function loadHeaderInventory() {
     const grid = document.querySelector(".inventory-grid");
     if (!grid) return;
@@ -87,28 +97,46 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      // ТЕПЕРЬ ОТРЕСОВЫВАЕМ ВСЕ ПРЕДМЕТЫ ИЗ МАССИВА, А НЕ ТОЛЬКО ПЕРВЫЕ 8
       items.forEach((item) => {
-        if (!item) return; // Защита от пустых объектов
+        if (!item) return; 
         
         const slot = document.createElement("div");
         slot.className = "inventory-slot";
         const isEquipped = item.is_equipped;
 
-        // Наполняем слот: картинка + счетчик предметов
+        // Собираем статы из базы данных, которые не равны дефолтным значениям
+        let statsHtml = '';
+        if (item.xpbonus > 1) statsHtml += `<div class="stat xp">Опыт: x${item.xpbonus}</div>`;
+        if (item.charismabonus > 0) statsHtml += `<div class="stat charisma">Харизма: +${item.charismabonus}</div>`;
+        if (item.restore_satiety > 0) statsHtml += `<div class="stat satiety">Еда: +${item.restore_satiety}</div>`;
+        if (item.restore_hydration > 0) statsHtml += `<div class="stat hydration">Вода: +${item.restore_hydration}</div>`;
+        if (item.energy_change !== 0) {
+            const sign = item.energy_change > 0 ? '+' : '';
+            statsHtml += `<div class="stat energy">Энергия: ${sign}${item.energy_change}</div>`;
+        }
+        if (item.hp_bonus !== 0) {
+            const sign = item.hp_bonus > 0 ? '+' : '';
+            statsHtml += `<div class="stat hp">хп: ${sign}${item.hp_bonus}</div>`;
+        }
+
+        // Рендерим структуру карточки предмета
         slot.innerHTML = `
-          <img src="../static/img/items/${item.image || 'default.png'}" alt="${item.name}">
+          <div class="slot-main-info">
+            <span class="item-title">${item.name}</span>
+            <div class="item-db-stats">${statsHtml}</div>
+          </div>
+          ${isEquipped ? '<span class="equipped-tag">Надето</span>' : ''}
           <span class="slot-count">x${item.quantity}</span>
         `;
         
         slot.style.cursor = "pointer";
-        // Всплывающая подсказка при наведении мышки на ячейку
+        // Полное описание оставляем во всплывающей подсказке
         slot.title = `${item.name}: ${item.description} ${isEquipped ? '[Надето]' : ''}`;
         
         // При клике по ячейке используем вещь
         slot.onclick = async () => {
           await window.useItem(item.id);
-          loadHeaderInventory(); // Мгновенно обновляем сетку рюкзака после использования
+          loadHeaderInventory(); 
         };
 
         grid.appendChild(slot);

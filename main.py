@@ -2,6 +2,7 @@ import random
 from models import *
 from flask import Flask,render_template,redirect,request,session,jsonify
 from peewee import fn
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask("myapp")
 app.secret_key = 'Poawlh9aw1982;lawfi'
@@ -679,7 +680,7 @@ def register():
             if Player.get_or_none(login=login):
                 return "Логин занят"
             else:
-                new_player = Player.create(login = login, password = password1, name=name, age=age, avatar=avatar, location=1, xp_bonus=1.0, money=100, time=360)
+                new_player = Player.create(login = login, password = generate_password_hash(password1), name=name, age=age, avatar=avatar, location=1, xp_bonus=1.0, money=100, time=360)
                 starter_items = Items.select().where(Items.price == 0)
 
                 for item in starter_items:
@@ -712,8 +713,10 @@ def auth():
         
         if not all([login,password]):
             return "Пропущены поля"
-        
-        if Player.get_or_none(login=login,password=password):
+
+        player = Player.get_or_none(login=login)
+        if player and check_password_hash(player.password, password):
+            
             session["is_auth"] = True
             session["login"] = login
             session["location"] = 1

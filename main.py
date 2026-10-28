@@ -79,14 +79,15 @@ def send_player_data(player, status, extra_data=None):
 # Обработка квеста
 def random_event(player):
     location = player.location_id
-    # Достаем одну единственную ситуацию из всех перемешанных ситуаций
+    
     active_cooldowns = (Cooldowns.select(Cooldowns.situation_id)
                         .where((Cooldowns.player_id == player.id) & (Cooldowns.available_at > 0)))
 
+    # Достаем одну единственную ситуацию из всех перемешанных ситуаций
     situation = (Random_situation
                  .select()
                  .where(
-                    (Random_situation.location_id == player.location_id) &
+                    (Random_situation.location_id == location) &
                     (Random_situation.id << active_cooldowns == False))
                  .order_by(fn.Random())
                  .first())
@@ -94,10 +95,9 @@ def random_event(player):
         return None
     
     cooldown = Cooldowns.get_or_none(player_id = player.id, situation_id = situation.id)
-    if cooldown and cooldown.available_at > 0:
-        return None
-
+    
     new_cooldown = random.randrange(1440, 2881, 10)
+    
     if cooldown:
         cooldown.available_at = new_cooldown
         cooldown.save()
@@ -110,7 +110,7 @@ def random_event(player):
         "description": situation.description,
         "choice": [situation.choice_name1, situation.choice_name2, situation.choice_name3]
     })  
-    return None  
+    
 
 """Обработка доступа"""
 
